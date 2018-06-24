@@ -1,0 +1,25 @@
+{
+    "name": "edphp/framework",
+    "description": "the php framework",
+    "type": "edphp-framework",
+    "authors": [
+        {
+            "name": "edwardsbean",
+            "email": "edwardsbean@gmail.com"
+        }
+    ],
+    "require": {
+        "monolog/monolog": "^1.23"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~7.0"
+    },
+    "autoload": {
+        "files": [
+            "src/edphp/helper.php"
+        ],
+        "psr-4": {
+            "edphp\\": "src/edphp/"
+        }
+    }
+}
