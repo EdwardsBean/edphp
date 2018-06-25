@@ -15,8 +15,6 @@ return [
         'app_trace'              => false,
         // 应用模式状态
         'app_status'             => '',
-        // 是否HTTPS
-        'is_https'               => false,
         // 入口自动绑定模块
         'auto_bind_module'       => false,
         // 注册的根命名空间
@@ -33,60 +31,26 @@ return [
         'default_timezone'       => 'Asia/Shanghai',
         // 默认验证器
         'default_validate'       => '',
-        // 默认语言
-        'default_lang'           => 'zh-cn',
 
         // +----------------------------------------------------------------------
         // | 模块设置
         // +----------------------------------------------------------------------
 
-        // 自动搜索控制器
-        'controller_auto_search' => false,
-        // 操作方法前缀
-        'use_action_prefix'      => false,
-        // 操作方法后缀
-        'action_suffix'          => '',
         // 默认的空控制器名
         'empty_controller'       => 'Error',
         // 默认的空模块名
         'empty_module'           => '',
-        // 默认模块名
-        'default_module'         => 'index',
         // 是否支持多模块
         'app_multi_module'       => true,
-        // 禁止访问模块
-        'deny_module_list'       => ['common'],
-        // 默认控制器名
-        'default_controller'     => 'Index',
-        // 默认操作名
-        'default_action'         => 'index',
-        // 是否自动转换URL中的控制器和操作名
-        'url_convert'            => true,
-        // 默认的访问控制器层
-        'url_controller_layer'   => 'controller',
-        // 应用类库后缀
-        'class_suffix'           => false,
-        // 控制器类后缀
-        'controller_suffix'      => false,
 
         // +----------------------------------------------------------------------
         // | URL请求设置
         // +----------------------------------------------------------------------
 
-        // 默认全局过滤方法 用逗号分隔多个
-        'default_filter'         => '',
-        // PATHINFO变量名 用于兼容模式
-        'var_pathinfo'           => 's',
-        // 兼容PATH_INFO获取
-        'pathinfo_fetch'         => ['ORIG_PATH_INFO', 'REDIRECT_PATH_INFO', 'REDIRECT_URL'],
-        // HTTPS代理标识
-        'https_agent_name'       => '',
         // IP代理获取标识
         'http_agent_ip'          => 'X-REAL-IP',
         // URL伪静态后缀
         'url_html_suffix'        => 'html',
-        // 域名根，如thinkphp.cn
-        'url_domain_root'        => '',
         // 表单请求类型伪装变量
         'var_method'             => '_method',
         // 表单ajax伪装变量
@@ -101,33 +65,6 @@ return [
         'request_cache_except'   => [],
 
         // +----------------------------------------------------------------------
-        // | 路由设置
-        // +----------------------------------------------------------------------
-
-        // pathinfo分隔符
-        'pathinfo_depr'          => '/',
-        // URL普通方式参数 用于自动生成
-        'url_common_param'       => false,
-        // URL参数方式 0 按名称成对解析 1 按顺序解析
-        'url_param_type'         => 0,
-        // 是否开启路由延迟解析
-        'url_lazy_route'         => false,
-        // 是否强制使用路由
-        'url_route_must'         => false,
-        // 合并路由规则
-        'route_rule_merge'       => false,
-        // 路由是否完全匹配
-        'route_complete_match'   => false,
-        // 使用注解路由
-        'route_annotation'       => false,
-        // 默认的路由变量规则
-        'default_route_pattern'  => '\w+',
-        // 是否开启路由缓存
-        'route_check_cache'      => false,
-        // 路由缓存的Key自定义设置（闭包），默认为当前URL和请求类型的md5
-        'route_check_cache_key'  => '',
-
-        // +----------------------------------------------------------------------
         // | 异常及错误设置
         // +----------------------------------------------------------------------
 
@@ -135,40 +72,13 @@ return [
         'dispatch_success_tmpl'  => __DIR__ . '/tpl/dispatch_jump.tpl',
         'dispatch_error_tmpl'    => __DIR__ . '/tpl/dispatch_jump.tpl',
         // 异常页面的模板文件
-        'exception_tmpl'         => __DIR__ . '/tpl/think_exception.tpl',
+        'exception_tmpl'         => __DIR__ . '/tpl/edphp_exception.tpl',
         // 错误显示信息,非调试模式有效
         'error_message'          => '页面错误！请稍后再试～',
         // 显示错误信息
         'show_error_msg'         => false,
-        // 异常处理handle类 留空使用 \think\exception\Handle
+        // 异常处理handle类 留空使用 \edphp\exception\Handle
         'exception_handle'       => '',
-    ],
-
-    // +----------------------------------------------------------------------
-    // | 模板设置
-    // +----------------------------------------------------------------------
-
-    'template' => [
-        // 默认模板渲染规则 1 解析为小写+下划线 2 全部转换小写
-        'auto_rule'    => 1,
-        // 模板引擎类型 支持 php think 支持扩展
-        'type'         => 'Think',
-        // 视图基础目录，配置目录为所有模块的视图起始目录
-        'view_base'    => '',
-        // 当前模板的视图目录 留空为自动获取
-        'view_path'    => '',
-        // 模板后缀
-        'view_suffix'  => 'html',
-        // 模板文件名分隔符
-        'view_depr'    => DIRECTORY_SEPARATOR,
-        // 模板引擎普通标签开始标记
-        'tpl_begin'    => '{',
-        // 模板引擎普通标签结束标记
-        'tpl_end'      => '}',
-        // 标签库标签开始标记
-        'taglib_begin' => '{',
-        // 标签库标签结束标记
-        'taglib_end'   => '}',
     ],
 
     // +----------------------------------------------------------------------
@@ -189,31 +99,6 @@ return [
     ],
 
     // +----------------------------------------------------------------------
-    // | Trace设置 开启 app_trace 后 有效
-    // +----------------------------------------------------------------------
-
-    'trace'    => [
-        // 内置Html Console 支持扩展
-        'type' => 'Html',
-        'file' => __DIR__ . '/tpl/page_trace.tpl',
-    ],
-
-    // +----------------------------------------------------------------------
-    // | 缓存设置
-    // +----------------------------------------------------------------------
-
-    'cache'    => [
-        // 驱动方式
-        'type'   => 'File',
-        // 缓存保存目录
-        //'path'   => CACHE_PATH,
-        // 缓存前缀
-        'prefix' => '',
-        // 缓存有效期 0表示永久缓存
-        'expire' => 0,
-    ],
-
-    // +----------------------------------------------------------------------
     // | 会话设置
     // +----------------------------------------------------------------------
 
@@ -222,7 +107,7 @@ return [
         // SESSION_ID的提交变量,解决flash上传跨域
         'var_session_id' => '',
         // SESSION 前缀
-        'prefix'         => 'think',
+        'prefix'         => 'edphp',
         // 驱动方式 支持redis memcache memcached
         'type'           => '',
         // 是否自动开启 SESSION
@@ -298,7 +183,7 @@ return [
         // 是否需要进行SQL性能分析
         'sql_explain'     => false,
         // 查询对象
-        'query'           => '\\think\\db\\Query',
+        'query'           => '\\edphp\\db\\Query',
     ],
 
     //分页配置
@@ -306,12 +191,5 @@ return [
         'type'      => 'bootstrap',
         'var_page'  => 'page',
         'list_rows' => 15,
-    ],
-
-    //控制台配置
-    'console'  => [
-        'name'    => 'Think Console',
-        'version' => '0.1',
-        'user'    => null,
     ],
 ];

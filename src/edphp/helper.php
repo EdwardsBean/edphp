@@ -4,19 +4,20 @@ if (!function_exists('config')) {
     /**
      * 获取和设置配置参数
      * @param string|array  $name 参数名
-     * @param mixed         $value 参数值
+     * @param mixed         $value 参数值不为空，则为设置值
      * @return mixed
      */
     function config($name = '', $value = null)
     {
+        $config = edphp\Config::getInstance();
         if (is_null($value) && is_string($name)) {
             if ('.' == substr($name, -1)) {
-                return Config::pull(substr($name, 0, -1));
+                return $config->pull(substr($name, 0, -1));
             }
 
-            return 0 === strpos($name, '?') ? Config::has(substr($name, 1)) : Config::get($name);
+            return 0 === strpos($name, '?') ? $config->has(substr($name, 1)) : $config->get($name);
         } else {
-            return Config::set($name, $value);
+            return $config->set($name, $value);
         }
     }
 }

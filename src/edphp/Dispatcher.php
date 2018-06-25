@@ -27,7 +27,8 @@ class Dispatcher
 
     public function run()
     {
-        return $this->exec();
+        $data = $this->exec();
+        return $data;
     }
 
     public function exec()
