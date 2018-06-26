@@ -1,10 +1,12 @@
 <?php
 
-namespace edphp;
+namespace edphp\route;
 
 use ReflectionMethod;
 use edphp\exception\HttpException;
 use edphp\exception\ClassNotFoundException;
+use edphp\Request;
+use edphp\Response;
 
 class Dispatcher
 {
@@ -19,16 +21,52 @@ class Dispatcher
     protected $path;
 
     protected $var;
+    
+    protected $middleware;
 
-    public function __construct(Request $request)
+    public function __construct(Request $request, Middleware $middleware)
     {
         $this->request = $request;
+        $this->middleware = $middleware;
     }
 
     public function run()
     {
+        //前置拦截器
+        $preData = $this->middleware->preHandle();
+        if (!is_null($preData)) {
+            return $this->autoResponse($preData);
+        }
+
+        //执行控制器
         $data = $this->exec();
-        return $data;
+
+        //后置拦截器
+        $afterData = $this->middleware->afterCompletion();
+        if (!is_null($afterData)) {
+            return $this->autoResponse($afterData);
+        }
+        return $this->autoResponse($data);
+    }
+
+    protected function autoResponse($data)
+    {
+        if ($data instanceof Response) {
+            $response = $data;
+        } elseif (!is_null($data)) {
+            // 默认自动识别响应输出类型
+            $isAjax = $this->request->isAjax();
+            $type   = config('default_return_type');
+
+            $response = Response::create($data, $type);
+        } else {
+            $data     = ob_get_clean();
+            $data     = false === $data ? '' : $data;
+            $status   = '' === $data ? 204 : 200;
+            $response = Response::create($data, '', $status);
+        }
+
+        return $response;
     }
 
     public function exec()
@@ -43,6 +81,7 @@ class Dispatcher
 
         $controller = $this->parseController($controller);
         $action = $this->parseAction($action);
+        $methodAction = $this->parseMethodAction($action);
 
         try {
             $instance = controller($this->parseName($controller, 1));
@@ -50,17 +89,18 @@ class Dispatcher
             throw new HttpException(404, 'controller not exists:' . $e->getClass());
         }
 
-        $call = [$instance, $action];
-        if (is_callable($call)) {
+        if (is_callable([$instance, $action])) {
             // 严格获取当前操作方法名
             $reflect = new ReflectionMethod($instance, $action);
-            $methodName = $reflect->getName();
-            $vars = $this->request->param();
-            
+        $call = [$instance, $action];
+        } else if(is_callable([$instance, $methodAction])) {
+            $reflect = new ReflectionMethod($instance, $methodAction);
         } else {
             // 操作不存在
             throw new HttpException(404, 'method not exists:' . get_class($instance) . '->' . $action . '()');
         }
+        $methodName = $reflect->getName();
+        $vars = $this->request->param();
         return $this->invokeReflectMethod($instance, $reflect, $vars);
     }
 
@@ -91,6 +131,12 @@ class Dispatcher
     }
 
     public function parseAction($action)
+    {
+        $action = $this->parseName($action, 1);
+        return $action;
+    }
+
+    public function parseMethodAction($action)
     {
         $action = $this->parseName($action, 1);
         $method = strtolower($this->request->method());
