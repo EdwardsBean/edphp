@@ -1,5 +1,7 @@
 <?php
 
+use edphp\Response;
+
 if (!function_exists('config')) {
     /**
      * 获取和设置配置参数
@@ -19,6 +21,31 @@ if (!function_exists('config')) {
         } else {
             return $config->set($name, $value);
         }
+    }
+}
+
+if (!function_exists('isDebug')) {
+    /**
+     * 是否调试模式
+     */
+    function isDebug()
+    {
+       return config('app.app_debug');
+    }
+}
+
+if (!function_exists('json')) {
+    /**
+     * 获取\think\response\Json对象实例
+     * @param mixed   $data 返回的数据
+     * @param integer $code 状态码
+     * @param array   $header 头部
+     * @param array   $options 参数
+     * @return \think\response\Json
+     */
+    function json($data = [], $code = 200, $header = [], $options = [])
+    {
+        return Response::create($data, 'json', $code, $header, $options);
     }
 }
 

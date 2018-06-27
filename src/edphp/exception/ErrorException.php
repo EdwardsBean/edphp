@@ -1,6 +1,6 @@
 <?php
 
-namespace think\exception;
+namespace edphp\exception;
 
 use edphp\Exception;
 

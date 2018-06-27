@@ -70,10 +70,13 @@ class App
 
     public function __construct($rootPath = '')
     {
-        $this->rootPath = $rootPath;
+        $this->rootPath = $rootPath . DIRECTORY_SEPARATOR;
         $this->appPath = $rootPath . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR;
         $this->configPath = $this->rootPath . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR;
         $this->frameworkPath = __DIR__ . DIRECTORY_SEPARATOR;
+
+        // 注册错误和异常处理机制
+        Error::register();
     }
     /**
      * 执行应用程序
@@ -111,8 +114,15 @@ class App
         // 加载惯例配置文件
         $this->config->set(include $this->frameworkPath . 'convention.php');
 
+
         //初始化用户配置
         $this->init();
+
+        // 注册异常处理类
+        if (config('app.exception_handle')) {
+            Error::setExceptionHandler(config('app.exception_handle'));
+        }
+        
 
     }
 
@@ -149,6 +159,19 @@ class App
             if ('.' . pathinfo($file, PATHINFO_EXTENSION) === '.php') {
                 $filename = $dir . DIRECTORY_SEPARATOR . $file;
                 $this->config->load($filename, pathinfo($file, PATHINFO_FILENAME));
+            }
+        }
+
+        // 加载环境配置
+        $profile = getenv('EDPHP_PROFILE');
+        if ($profile) {
+            $profilePath = $this->rootPath . 'env.' . $profile;
+            if (file_exists($profilePath)) {
+                $env = parse_ini_file($profilePath, true, INI_SCANNER_TYPED);
+                if(is_array($env)) {
+                    foreach ($env as $item => $value)
+                    $this->config->set($value, $item);
+                }
             }
         }
     }

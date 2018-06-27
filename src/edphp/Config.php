@@ -133,7 +133,7 @@ class Config implements \ArrayAccess
      * 设置配置参数 name为数组则为批量设置
      * @access public
      * @param  string|array  $name 配置参数名（支持三级配置 .号分割）
-     * @param  mixed         $value 配置值
+     * @param  mixed         $value 配置值.如果$name为array则$value为配置项如app,database
      * @return mixed
      */
     public function set($name, $value = null)
