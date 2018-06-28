@@ -6,6 +6,8 @@ use edphp\route\Dispatcher;
 
 class App
 {
+    const VERSION = '1.0.0';
+
     /**
      * 容器对象实例
      * @var App
@@ -195,6 +197,16 @@ class App
         $this->middleware = new Middleware;
         $this->request = new Request;
         $this->dispatcher = new Dispatcher($this->request, $this->middleware);
+    }
+
+    /**
+     * 获取框架版本
+     * @access public
+     * @return string
+     */
+    public static function version()
+    {
+        return static::VERSION;
     }
 
 }
