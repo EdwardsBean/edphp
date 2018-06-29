@@ -125,6 +125,7 @@ class App
             Error::setExceptionHandler(config('app.exception_handle'));
         }
         
+        Db::init($this->config->pull('database'));
 
     }
 
