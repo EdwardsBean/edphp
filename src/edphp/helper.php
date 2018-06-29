@@ -1,5 +1,6 @@
 <?php
 
+use edphp\Db;
 use edphp\Response;
 
 if (!function_exists('config')) {
@@ -34,6 +35,20 @@ if (!function_exists('isDebug')) {
     }
 }
 
+if (!function_exists('db')) {
+    /**
+     * 实例化数据库类
+     * @param string        $name 操作的数据表名称（不含前缀）
+     * @param array|string  $config 数据库配置参数
+     * @param bool          $force 是否强制重新连接
+     * @return \edphp\db\Query
+     */
+    function db($name = '', $config = [], $force = true)
+    {
+        return Db::connect($config, $force)->name($name);
+    }
+}
+
 if (!function_exists('json')) {
     /**
      * 获取\think\response\Json对象实例
@@ -46,6 +61,30 @@ if (!function_exists('json')) {
     function json($data = [], $code = 200, $header = [], $options = [])
     {
         return Response::create($data, 'json', $code, $header, $options);
+    }
+}
+
+if (!function_exists('controller')) {
+
+    /**
+     * 实例化（分层）控制器 格式：[模块名/]控制器名
+     * @access public
+     * @param  string $name              资源地址
+     * @param  string $layer             控制层名称
+     * @param  bool   $appendSuffix      是否添加类名后缀
+     * @param  string $empty             空控制器名称
+     * @return object
+     * @throws ClassNotFoundException
+     */
+    function controller($name, $layer = 'controller', $appendSuffix = false, $empty = '')
+    {
+        $class = parseClass($layer, $name);
+
+        if (class_exists($class)) {
+            return invokeClass($class);
+        }
+
+        throw new ClassNotFoundException('class not exists:' . $class, $class);
     }
 }
 
@@ -74,31 +113,7 @@ if (!function_exists('invokeClass')) {
     }
 }
 
-if (!function_exists('controller')) {
-
-    /**
-     * 实例化（分层）控制器 格式：[模块名/]控制器名
-     * @access public
-     * @param  string $name              资源地址
-     * @param  string $layer             控制层名称
-     * @param  bool   $appendSuffix      是否添加类名后缀
-     * @param  string $empty             空控制器名称
-     * @return object
-     * @throws ClassNotFoundException
-     */
-    function controller($name, $layer = 'controller', $appendSuffix = false, $empty = '')
-    {
-        $class = parseClass($layer, $name);
-
-        if (class_exists($class)) {
-            return invokeClass($class);
-        }
-
-        throw new ClassNotFoundException('class not exists:' . $class, $class);
-    }
-}
-
-if (!function_exists('passClass')) {
+if (!function_exists('parseClass')) {
     /**
      * 解析应用类的类名
      * @access public
@@ -112,5 +127,103 @@ if (!function_exists('passClass')) {
         $array = explode('\\', $name);
 
         return 'app\\' . (!empty($module) ? $module . '\\' : '') . $layer . '\\' . $name;
+    }
+}
+
+if (!function_exists('invokeFunction')) {
+    /**
+     * 执行函数或者闭包方法 支持参数调用
+     * @access public
+     * @param  mixed  $function 函数或者闭包
+     * @param  array  $vars     参数
+     * @return mixed
+     */
+    function invokeFunction($function, $vars = [])
+    {
+        try {
+            $reflect = new ReflectionFunction($function);
+
+            $args = $this->bindParams($reflect, $vars);
+
+            return call_user_func_array($function, $args);
+        } catch (ReflectionException $e) {
+            throw new Exception('function not exists: ' . $function . '()');
+        }
+    }
+
+}
+
+if (!function_exists('bindParams')) {
+        /**
+     * 绑定参数
+     * @access protected
+     * @param  \ReflectionMethod|\ReflectionFunction $reflect 反射类
+     * @param  array                                 $vars    参数
+     * @return array
+     */
+    function bindParams($reflect, $vars = [])
+    {
+        if ($reflect->getNumberOfParameters() == 0) {
+            return [];
+        }
+
+        // 判断数组类型 数字数组时按顺序绑定参数
+        reset($vars);
+        $type   = key($vars) === 0 ? 1 : 0;
+        $params = $reflect->getParameters();
+
+        foreach ($params as $param) {
+            $name  = $param->getName();
+            $class = $param->getClass();
+
+            if ($class) {
+                $args[] = getObjectParam($class->getName(), $vars);
+            } elseif (1 == $type && !empty($vars)) {
+                $args[] = array_shift($vars);
+            } elseif (0 == $type && isset($vars[$name])) {
+                $args[] = $vars[$name];
+            } elseif ($param->isDefaultValueAvailable()) {
+                $args[] = $param->getDefaultValue();
+            } else {
+                throw new InvalidArgumentException('method param miss:' . $name);
+            }
+        }
+
+        return $args;
+    }
+
+    function getObjectParam($className, &$vars)
+    {
+        $array = $vars;
+        $value = array_shift($array);
+
+        if ($value instanceof $className) {
+            $result = $value;
+            array_shift($vars);
+        } else {
+            $result = invokeClass($className);
+        }
+
+        return $result;
+    }
+
+}
+
+if (!function_exists('invoke')) {
+
+    /**
+     * 调用反射执行callable 支持参数绑定
+     * @access public
+     * @param  mixed $callable
+     * @param  array $vars   参数
+     * @return mixed
+     */
+    function invoke($callable, $vars = [])
+    {
+        if ($callable instanceof Closure) {
+            return invokeFunction($callable, $vars);
+        }
+
+        return invokeMethod($callable, $vars);
     }
 }
