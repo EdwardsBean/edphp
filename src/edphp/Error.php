@@ -75,6 +75,8 @@ class Error {
 
             self::handleException($exception);
         }
+
+        Log::getInstance()->save();
     }
 
     /**

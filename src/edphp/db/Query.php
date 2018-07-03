@@ -136,7 +136,7 @@ class Query
      */
     public function __call($method, $args)
     {
-        $fastKey = fastMatch($method);
+        $fastKey = $this->fastMatch($method);
         if (isset(self::$extend[strtolower($method)])) {
             // 调用扩展查询方法
             array_unshift($args, $this);
@@ -151,6 +151,10 @@ class Query
 
             call_user_func_array([$this->model, $method], $args);
             return $this;
+        } elseif (strtolower(substr($method, 0, 5)) == 'where') {
+            $name = parseName(substr($method, 5));
+            array_unshift($args, $name);
+            return call_user_func_array([$this, 'where'], $args);
         } else {
             throw new Exception('method not exist:' . static::class . '->' . $method);
         }
@@ -164,9 +168,12 @@ class Query
         }
     }
 
-    private function parseFastExpression($method, $fastKey) {
+    private function parseFastExpression($method, $fastKey, $args) {
         $body = str_ireplace($fastKey, '', $method);
         $arr = preg_split("/(?=[A-Z])/", $body); 
+        //去掉大写分割，第一个为空的
+        array_shift($arr);
+        $arr = array_map('strtolower', $arr);
         $logic = false;
         $logicField = 'And';
         foreach ($arr as $field) {
@@ -178,37 +185,47 @@ class Query
             } else {
                 switch($logicField) {
                     case 'And':
-                        $this->where($field, array_unshift($args));
+                        $this->where($field, array_shift($args));
+                        break;
                     case 'Or':
-                        $this->whereOr($field, array_unshift($args));
+                        $this->whereOr($field, array_shift($args));
+                        break;
                     case 'In':
-                        $this->whereOr($field, array_unshift($args));
+                        $this->whereOr($field, array_shift($args));
+                        break;
                     case 'Not':
-                        $this->where($field, '<>', array_unshift($args));
+                        $this->where($field, '<>', array_shift($args));
+                        break;
                     case 'Notin':
-                        $this->whereNotIn($field, array_unshift($args));
+                        $this->whereNotIn($field, array_shift($args));
+                        break;
                     case 'Between':
-                        $this->whereBetween($field, array_unshift($args));
+                        $this->whereBetween($field, array_shift($args));
+                        break;
                     case 'Gt':
-                        $this->where($field, '>', array_unshift($args));
+                        $this->where($field, '>', array_shift($args));
+                        break;
                     case 'Gte':
-                        $this->where($field, '>=', array_unshift($args));
+                        $this->where($field, '>=', array_shift($args));
+                        break;
                     case 'Lt':
-                        $this->where($field, '<', array_unshift($args));
+                        $this->where($field, '<', array_shift($args));
+                        break;
                     case 'Lte':
-                        $this->where($field, '<=', array_unshift($args));
+                        $this->where($field, '<=', array_shift($args));
+                        break;
                     case 'Like':
-                        $this->whereLike($field, array_unshift($args));
+                        $this->whereLike($field, array_shift($args));
+                        break;
                     case 'Notlike':
-                        $this->whereNotLike($field, array_unshift($args));
+                        $this->whereNotLike($field, array_shift($args));
+                        break;
                 }
                 $logic = true;
             }
         }
         if ('findBy' === $fastKey) {
             return $this;
-        } else if ('existsBy' === $fastKey) {
-            //TODO
         } else if ('deleteBy' === $fastKey) {
             return $this->delete();
         } else if ('removeBy' === $fastKey) {
@@ -334,7 +351,7 @@ class Query
 
         $name = $name ?: $this->name;
 
-        return $this->prefix . Loader::parseName($name);
+        return $this->prefix . parseName($name);
     }
 
     /**
@@ -998,6 +1015,28 @@ class Query
     public function unionAll($union)
     {
         return $this->union($union, true);
+    }
+    
+    /**
+     * 设置返回字段
+     * @access public
+     * @param array     $field
+     * @return $this
+     */
+    public function exclude($field, $tableName = '', $prefix = '', $alias = '')
+    {
+        return $this->field($field, true);
+    }
+
+    /**
+     * 设置返回字段
+     * @access public
+     * @param array     $field
+     * @return $this
+     */
+    public function include($field, $tableName = '', $prefix = '', $alias = '')
+    {
+        return $this->field($field, false);
     }
 
     /**
@@ -2406,7 +2445,7 @@ class Query
             }
 
             /** @var Relation $model */
-            $relation = Loader::parseName($relation, 1, false);
+            $relation = parseName($relation, 1, false);
             $model    = $class->$relation();
 
             if ($model instanceof OneToOne && 0 == $model->getEagerlyType()) {
@@ -2458,10 +2497,10 @@ class Query
                 }
 
                 if (!isset($aggregateField)) {
-                    $aggregateField = Loader::parseName($relation) . '_' . $aggregate;
+                    $aggregateField = parseName($relation) . '_' . $aggregate;
                 }
 
-                $relation = Loader::parseName($relation, 1, false);
+                $relation = parseName($relation, 1, false);
                 $count    = '(' . $this->model->$relation()->getRelationCountQuery($closure, $aggregate, $field) . ')';
 
                 $this->field([$count => $aggregateField]);

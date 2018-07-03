@@ -8,7 +8,7 @@ class Request
      * 对象实例
      * @var object
      */
-    protected $instance;
+    private static $instance;
 
     /**
      * 配置参数
@@ -240,6 +240,15 @@ class Request
      */
     protected $secureKey;
 
+    public static function getInstance()
+    {
+        if (is_null(self::$instance)) {
+            self::$instance = new Request();
+        }
+
+        return self::$instance;
+    }
+
     /**
      * 架构函数
      * @access public
@@ -274,7 +283,7 @@ class Request
      * @param  array     $files
      * @param  array     $server
      * @param  string    $content
-     * @return \think\Request
+     * @return \edphp\Request
      */
     public function create($uri, $method = 'GET', $params = [], $cookie = [], $files = [], $server = [], $content = null)
     {
@@ -413,7 +422,7 @@ class Request
             $rootDomain = $this->config['url_domain_root'];
 
             if ($rootDomain) {
-                // 配置域名根 例如 thinkphp.cn 163.com.cn 如果是国家级域名 com.cn net.cn 之类的域名需要配置
+                // 配置域名根 例如 edphpphp.cn 163.com.cn 如果是国家级域名 com.cn net.cn 之类的域名需要配置
                 $domain = explode('.', rtrim(stristr($this->host(true), $rootDomain, true), '.'));
             } else {
                 $domain = explode('.', $this->host(true), -2);
@@ -985,7 +994,7 @@ class Request
      * 获取上传的文件信息
      * @access public
      * @param  string|array $name 名称
-     * @return null|array|\think\File
+     * @return null|array|\edphp\File
      */
     public function file($name = '')
     {
@@ -1720,7 +1729,7 @@ class Request
             header($name . ': ' . $token);
         }
 
-        facade\Session::set($name, $token);
+        // facade\Session::set($name, $token);
 
         return $token;
     }

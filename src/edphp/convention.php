@@ -93,7 +93,7 @@ return [
         // 日志记录级别
         'level'        => [],
         // 是否记录trace信息到日志
-        'record_trace' => false,
+        'record_trace' => true,
         // 是否JSON格式记录
         'json'         => false,
     ],
@@ -192,4 +192,15 @@ return [
         'var_page'  => 'page',
         'list_rows' => 15,
     ],
+
+    'trace' => [
+        'type'       =>  'Console',
+        'trace_tabs' =>  [
+             'base'=>'基本',
+             'file'=>'文件',
+             'error|notice|warning'=>'错误',
+             'sql'=>'SQL',
+             'debug|info'=>'调试',
+         ]
+    ]
 ];

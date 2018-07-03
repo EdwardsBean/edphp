@@ -26,10 +26,14 @@ composer require "edphp/framework @dev"
 
 ### 数据库操作
 DB 初始化
-Query 组装,用户入口 
-Connection 发送语句
-Builder driver封装
 
+Query 组装,用户入口。把参数都塞进options 
+Connection 封装对应driver调用
+Builder 将options解析封装成driver query，交给connection执行。
+query.get() -> connection.get() -> builder.select()
+                                -> connection.query()
+
+改造的话，主要是在builder里。connection会添加特定数据库的额外配置到options中。                                
 ##### Query Builder
 db('tableName')返回query对象。
 
@@ -39,7 +43,7 @@ db('accounts')->where('votes', '>', 100)->get();
 db('accounts')->whereBetween('votes', [1, 100])->get();
 db('accounts')->where('username', 'edwardsbean')->getOne();
 db('accounts')->where(['username'=>'edwardsbean'])->get();
-db('accounts')->where('username', 'edwardsbean')->orderBy('age', 'desc')->get(); //多字段排序？？？
+db('accounts')->where('username', 'edwardsbean')->order('age', 'desc')->get(); //多字段排序？？？
 db('accounts')->where('username', 'edwardsbean')->paginate(0, 20)->get();
 
 //update with id

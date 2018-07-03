@@ -7,30 +7,32 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-namespace edphp\mongo;
+namespace edphp\db\connector;
 
+use edphp\Db;
+use edphp\Debug;
+use edphp\Container;
+use edphp\Exception;
+use edphp\Collection;
+use edphp\db\mongo\Query;
 use MongoDB\BSON\ObjectID;
-use MongoDB\Driver\BulkWrite;
-use MongoDB\Driver\Command;
 use MongoDB\Driver\Cursor;
-use MongoDB\Driver\Exception\AuthenticationException;
+use MongoDB\Driver\Command;
+use MongoDB\Driver\Manager;
+use MongoDB\Driver\BulkWrite;
+use MongoDB\Driver\WriteConcern;
+use MongoDB\Driver\ReadPreference;
+use MongoDB\Driver\Query as MongoQuery;
+use MongoDB\Driver\Exception\RuntimeException;
 use MongoDB\Driver\Exception\BulkWriteException;
 use MongoDB\Driver\Exception\ConnectionException;
+use MongoDB\Driver\Exception\AuthenticationException;
 use MongoDB\Driver\Exception\InvalidArgumentException;
-use MongoDB\Driver\Exception\RuntimeException;
-use MongoDB\Driver\Manager;
-use MongoDB\Driver\Query as MongoQuery;
-use MongoDB\Driver\ReadPreference;
-use MongoDB\Driver\WriteConcern;
-use edphp\Collection;
-use edphp\Container;
-use edphp\Db;
-use edphp\Exception;
 
 /**
  * Mongo数据库驱动
  */
-class Connection
+class Mongo 
 {
     protected static $instance = [];
     protected $dbName          = ''; // dbName
@@ -50,7 +52,7 @@ class Connection
     protected $linkRead;
     protected $linkWrite;
     // Builder对象
-    protected $builder;
+    protected $builder = '\\edphp\\db\\builder\\Mongo';
     // 返回或者影响记录数
     protected $numRows = 0;
     // 错误信息
@@ -130,7 +132,7 @@ class Connection
             $this->config = array_merge($this->config, $config);
         }
 
-        $this->builder = new Builder($this);
+        $this->builder = new $this->builder($this);
     }
 
     /**
@@ -535,7 +537,7 @@ class Connection
 
     public function logger($log, $type = 'sql')
     {
-        $this->config['debug'] && Container::get('log')->record($log, $type);
+        $this->config['debug'] && record($log, $type);
     }
 
     /**
@@ -549,7 +551,7 @@ class Connection
     {
         if (!empty($this->config['debug'])) {
             // 开启数据库调试模式
-            $debug = Container::get('debug');
+            $debug = Debug::getInstance();
             if ($start) {
                 $debug->remark('queryStartTime', 'time');
             } else {
@@ -985,7 +987,7 @@ class Connection
      * @throws ConnectionException
      * @throws RuntimeException
      */
-    public function select(Query $query)
+    public function get(Query $query)
     {
         $options = $query->getOptions();
 
@@ -1035,7 +1037,7 @@ class Connection
      * @throws ConnectionException
      * @throws RuntimeException
      */
-    public function find(Query $query)
+    public function getOne(Query $query)
     {
         // 分析查询表达式
         $options = $query->getOptions();

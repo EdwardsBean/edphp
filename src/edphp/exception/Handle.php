@@ -2,12 +2,13 @@
 
 namespace edphp\exception;
 
-use Exception;
 use edphp\Response;
+use Exception;
 
 class Handle
 {
     protected $render;
+    //
     protected $ignoreReport = [
         '\\edphp\\exception\\HttpException',
     ];
@@ -26,31 +27,33 @@ class Handle
      */
     public function report(Exception $exception)
     {
-        //TODO 收集错误，写入日志文件
-        // if (!$this->isIgnoreReport($exception)) {
-        //     // 收集异常数据
-        //     if (Container::get('app')->isDebug()) {
-        //         $data = [
-        //             'file'    => $exception->getFile(),
-        //             'line'    => $exception->getLine(),
-        //             'message' => $this->getMessage($exception),
-        //             'code'    => $this->getCode($exception),
-        //         ];
-        //         $log = "[{$data['code']}]{$data['message']}[{$data['file']}:{$data['line']}]";
-        //     } else {
-        //         $data = [
-        //             'code'    => $this->getCode($exception),
-        //             'message' => $this->getMessage($exception),
-        //         ];
-        //         $log = "[{$data['code']}]{$data['message']}";
-        //     }
+        if (!$this->isIgnoreReport($exception)) {
+            // 收集异常数据
+            $data = [
+                'file' => $exception->getFile(),
+                'line' => $exception->getLine(),
+                'message' => $this->getMessage($exception),
+                'code' => $this->getCode($exception),
+            ];
+            $log = "[{$data['code']}]{$data['message']}[{$data['file']}:{$data['line']}]";
 
-        //     if (Container::get('app')->config('log.record_trace')) {
-        //         $log .= "\r\n" . $exception->getTraceAsString();
-        //     }
+            if (config('log.record_trace')) {
+                $log .= "\r\n" . $exception->getTraceAsString();
+            }
 
-        //     Container::get('log')->record($log, 'error');
-        // }
+            record($log, 'error');
+        }
+    }
+
+    protected function isIgnoreReport(Exception $exception)
+    {
+        foreach ($this->ignoreReport as $class) {
+            if ($exception instanceof $class) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -62,12 +65,12 @@ class Handle
      */
     public function render(Exception $e)
     {
-        if(isDebug()) {
+        if (isDebug()) {
             //TODO 输出错误页面方便调试
-           return $this->renderErrorHtml($e);
+            return $this->renderErrorHtml($e);
         } else {
             return $this->renderErrorJson($e);
-        } 
+        }
 
     }
 
@@ -75,21 +78,21 @@ class Handle
     {
         // 调试模式，获取详细的错误信息
         $data = [
-            'name'    => get_class($exception),
-            'file'    => $exception->getFile(),
-            'line'    => $exception->getLine(),
+            'name' => get_class($exception),
+            'file' => $exception->getFile(),
+            'line' => $exception->getLine(),
             'message' => $this->getMessage($exception),
-            'trace'   => $exception->getTrace(),
-            'code'    => $this->getCode($exception),
-            'source'  => $this->getSourceCode($exception),
-            'datas'   => $this->getExtendData($exception),
-            'tables'  => [
-                'GET Data'              => $_GET,
-                'POST Data'             => $_POST,
-                'Files'                 => $_FILES,
-                'Cookies'               => $_COOKIE,
-                'Session'               => isset($_SESSION) ? $_SESSION : [],
-                'Server/Request Data'   => $_SERVER,
+            'trace' => $exception->getTrace(),
+            'code' => $this->getCode($exception),
+            'source' => $this->getSourceCode($exception),
+            'datas' => $this->getExtendData($exception),
+            'tables' => [
+                'GET Data' => $_GET,
+                'POST Data' => $_POST,
+                'Files' => $_FILES,
+                'Cookies' => $_COOKIE,
+                'Session' => isset($_SESSION) ? $_SESSION : [],
+                'Server/Request Data' => $_SERVER,
                 'Environment Variables' => $_ENV,
             ],
         ];
@@ -105,7 +108,7 @@ class Handle
         extract($data);
         include config('exception_tmpl');
         // 获取并清空缓存
-        $content  = ob_get_clean();
+        $content = ob_get_clean();
         $response = Response::create($content, 'html');
 
         if ($exception instanceof HttpException) {
@@ -128,10 +131,10 @@ class Handle
             return json(['msg' => 'no route found', 'code' => 422, 'success' => false]);
         }
         // 请求异常
-        if ($e instanceof \edphp\exception\HttpException ) {
+        if ($e instanceof \edphp\exception\HttpException) {
             return json(['msg' => $e->getMessage(), 'code' => $e->getStatusCode(), 'success' => false]);
         }
-       
+
         return json(['msg' => 'server error', 'code' => 500, 'success' => false]);
     }
 
@@ -176,13 +179,13 @@ class Handle
     protected function getSourceCode(Exception $exception)
     {
         // 读取前9行和后9行
-        $line  = $exception->getLine();
+        $line = $exception->getLine();
         $first = ($line - 9 > 0) ? $line - 9 : 1;
 
         try {
             $contents = file($exception->getFile());
-            $source   = [
-                'first'  => $first,
+            $source = [
+                'first' => $first,
                 'source' => array_slice($contents, $first - 1, 19),
             ];
         } catch (Exception $e) {
@@ -203,7 +206,7 @@ class Handle
     {
         $data = [];
 
-        if ($exception instanceof \think\Exception) {
+        if ($exception instanceof \edphp\Exception) {
             $data = $exception->getData();
         }
 

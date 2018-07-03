@@ -1,13 +1,6 @@
 <?php
-// +----------------------------------------------------------------------
-// | ThinkPHP [ WE CAN DO IT JUST THINK ]
-// +----------------------------------------------------------------------
-// | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
-// +----------------------------------------------------------------------
-// | Author: liu21st <liu21st@gmail.com>
-// +----------------------------------------------------------------------
 
-namespace edphp\mongo;
+namespace edphp\db\mongo;
 
 use MongoDB\Driver\BulkWrite;
 use MongoDB\Driver\Command;
@@ -23,6 +16,7 @@ use MongoDB\Driver\WriteConcern;
 use edphp\Collection;
 use edphp\db\Query as BaseQuery;
 use edphp\Exception;
+use edphp\db\connector\Mongo as Connection;
 
 class Query extends BaseQuery
 {
@@ -526,7 +520,7 @@ class Query extends BaseQuery
      * @param boolean   $except 是否排除
      * @return $this
      */
-    public function field($field, $except, $tableName = '', $prefix = '', $alias = '')
+    public function field($field, $except = false, $tableName = '', $prefix = '', $alias = '')
     {
         if (is_string($field)) {
             $field = array_map('trim', explode(',', $field));
@@ -544,28 +538,6 @@ class Query extends BaseQuery
         $this->options['projection'] = $projection;
 
         return $this;
-    }
-
-    /**
-     * 设置返回字段
-     * @access public
-     * @param array     $field
-     * @return $this
-     */
-    public function exclude($field, $tableName = '', $prefix = '', $alias = '')
-    {
-        return $this->field($field, true);
-    }
-
-    /**
-     * 设置返回字段
-     * @access public
-     * @param array     $field
-     * @return $this
-     */
-    public function include($field, $tableName = '', $prefix = '', $alias = '')
-    {
-        return $this->field($field, false);
     }
 
     /**

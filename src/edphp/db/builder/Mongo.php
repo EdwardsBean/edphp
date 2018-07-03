@@ -1,13 +1,6 @@
 <?php
-// +----------------------------------------------------------------------
-// | ThinkPHP [ WE CAN DO IT JUST THINK ]
-// +----------------------------------------------------------------------
-// | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
-// +----------------------------------------------------------------------
-// | Author: liu21st <liu21st@gmail.com>
-// +----------------------------------------------------------------------
 
-namespace edphp\mongo;
+namespace edphp\db\builder;
 
 use MongoDB\BSON\Javascript;
 use MongoDB\BSON\ObjectID;
@@ -16,9 +9,11 @@ use MongoDB\Driver\BulkWrite;
 use MongoDB\Driver\Command;
 use MongoDB\Driver\Exception\InvalidArgumentException;
 use MongoDB\Driver\Query as MongoQuery;
+use edphp\db\connector\Mongo as Connection;
+use edphp\db\mongo\Query;
 use edphp\Exception;
 
-class Builder
+class Mongo 
 {
     // connection对象实例
     protected $connection;
@@ -469,10 +464,11 @@ class Builder
     {
         $options = $query->getOptions();
 
-        $where = $this->parseWhere($query, $options['where']);
-        $query = new MongoQuery($where, $options);
+        //$filter参考http://php.net/manual/zh/mongodb-driver-query.construct.php
+        $filter = $this->parseWhere($query, $options['where']);
+        $query = new MongoQuery($filter, $options);
 
-        $this->log('find', $where, $options);
+        $this->log('find', $filter, $options);
 
         return $query;
     }

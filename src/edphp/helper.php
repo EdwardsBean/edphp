@@ -1,12 +1,33 @@
 <?php
 
 use edphp\Db;
+use edphp\Log;
 use edphp\Response;
+use edphp\exception\HttpException;
+use edphp\exception\HttpResponseException;
+
+
+if (!function_exists('abort')) {
+    /**
+     * 抛出HTTP异常
+     * @param integer|Response      $code 状态码 或者 Response对象实例
+     * @param string                $message 错误信息
+     * @param array                 $header 参数
+     */
+    function abort($code, $message = null, $header = [])
+    {
+        if ($code instanceof Response) {
+            throw new HttpResponseException($code);
+        } else {
+            throw new HttpException($code, $message, null, $header);
+        }
+    }
+}
 
 if (!function_exists('config')) {
     /**
      * 获取和设置配置参数
-     * @param string|array  $name 参数名
+     * @param string|array  $name 参数名.可以为app.,app.debug,debug(默认app.debug)
      * @param mixed         $value 参数值不为空，则为设置值
      * @return mixed
      */
@@ -14,6 +35,7 @@ if (!function_exists('config')) {
     {
         $config = edphp\Config::getInstance();
         if (is_null($value) && is_string($name)) {
+            //带点号，则获取该配置项,如trace.
             if ('.' == substr($name, -1)) {
                 return $config->pull(substr($name, 0, -1));
             }
@@ -51,12 +73,12 @@ if (!function_exists('db')) {
 
 if (!function_exists('json')) {
     /**
-     * 获取\think\response\Json对象实例
+     * 获取\edphp\response\Json对象实例
      * @param mixed   $data 返回的数据
      * @param integer $code 状态码
      * @param array   $header 头部
      * @param array   $options 参数
-     * @return \think\response\Json
+     * @return \edphp\response\Json
      */
     function json($data = [], $code = 200, $header = [], $options = [])
     {
@@ -103,7 +125,7 @@ if (!function_exists('invokeClass')) {
 
             $constructor = $reflect->getConstructor();
 
-            $args = $constructor ? $this->bindParams($constructor, $vars) : [];
+            $args = $constructor ? bindParams($constructor, $vars) : [];
 
             return $reflect->newInstanceArgs($args);
 
@@ -143,7 +165,7 @@ if (!function_exists('invokeFunction')) {
         try {
             $reflect = new ReflectionFunction($function);
 
-            $args = $this->bindParams($reflect, $vars);
+            $args = bindParams($reflect, $vars);
 
             return call_user_func_array($function, $args);
         } catch (ReflectionException $e) {
@@ -225,5 +247,81 @@ if (!function_exists('invoke')) {
         }
 
         return invokeMethod($callable, $vars);
+    }
+}
+
+if (!function_exists('parseName')) {
+        /**
+     * 字符串命名风格转换
+     * type 0 将Java风格转换为C的风格 1 将C风格转换为Java的风格
+     * @access public
+     * @param  string  $name 字符串
+     * @param  integer $type 转换类型
+     * @param  bool    $ucfirst 首字母是否大写（驼峰规则）
+     * @return string
+     */
+    function parseName($name, $type = 0, $ucfirst = true)
+    {
+        if ($type) {
+            $name = preg_replace_callback('/_([a-zA-Z])/', function ($match) {
+                return strtoupper($match[1]);
+            }, $name);
+            return $ucfirst ? ucfirst($name) : lcfirst($name);
+        }
+
+        return strtolower(trim(preg_replace("/[A-Z]/", "_\\0", $name), "_"));
+    }
+
+}
+
+if (!function_exists('record')) {
+        /**
+     * 记录日志信息
+     * @access public
+     * @param  mixed  $msg       日志信息
+     * @param  string $type      日志级别
+     * @param  array  $context   替换内容
+     * @return $this
+     */
+    function record($msg, $type = 'info', array $context = [])
+    {
+        $log = Log::getInstance();
+        if (!$log->allowWrite) {
+            return;
+        }
+
+        if (is_string($msg)) {
+            $replace = [];
+            foreach ($context as $key => $val) {
+                $replace['{' . $key . '}'] = $val;
+            }
+
+            $msg = strtr($msg, $replace);
+        }
+
+        $log->log[$type][] = $msg;
+    }
+}
+
+if (!function_exists('debug')) {
+    function debug($msg, $type = 'info', array $context = []) {
+        if (isDebug()) {
+            record($msg, $type, $context);
+        }
+    }
+}
+
+if (!function_exists('token')) {
+    /**
+     * 生成表单令牌
+     * @param string $name 令牌名称
+     * @param mixed  $type 令牌生成方法
+     * @return string
+     */
+    function token($name = '__token__', $type = 'md5')
+    {
+        $token = Request::token($name, $type);
+
+        return '<input type="hidden" name="' . $name . '" value="' . $token . '" />';
     }
 }

@@ -2,16 +2,17 @@
 
 namespace edphp\db;
 
-use InvalidArgumentException;
 use PDO;
+use edphp\Db;
+use edphp\App;
+use edphp\Debug;
+use edphp\Loader;
 use PDOStatement;
 use edphp\Container;
-use edphp\Db;
-use edphp\db\exception\BindParamException;
-use edphp\Debug;
 use edphp\Exception;
+use InvalidArgumentException;
 use edphp\exception\PDOException;
-use edphp\Loader;
+use edphp\db\exception\BindParamException;
 
 abstract class Connection
 {
@@ -179,15 +180,14 @@ abstract class Connection
                 throw new InvalidArgumentException('Undefined db type');
             }
 
-            // TODO 记录初始化信息
-            // Container::get('app')->log('[ DB ] INIT ' . $config['type']);
+            debug('[ DB ] INIT ' . $config['type']);
 
             if (true === $name) {
                 $name = md5(serialize($config));
             }
 
             //根据配置，初始化mysql or mongo connection
-            self::$instance[$name] = Loader::factory($config['type'], '\\edphp\\db\\connector\\', $config);
+            self::$instance[$name] = invokeClass('\\edphp\\db\\connector\\' . $config['type'], [$config]);
         }
 
         return self::$instance[$name];
@@ -360,7 +360,7 @@ abstract class Connection
 
         if (!isset(self::$info[$schema])) {
             // 读取缓存
-            $cacheFile = Container::get('app')->getRuntimePath() . 'schema' . DIRECTORY_SEPARATOR . $schema . '.php';
+            $cacheFile = App::getInstance()->getRuntimePath() . 'schema' . DIRECTORY_SEPARATOR . $schema . '.php';
 
             if (!$this->config['debug'] && is_file($cacheFile)) {
                 $info = include $cacheFile;
@@ -798,7 +798,7 @@ abstract class Connection
      * @throws ModelNotFoundException
      * @throws DataNotFoundException
      */
-    public function find(Query $query)
+    public function getOne(Query $query)
     {
         // 分析查询表达式
         $options = $query->getOptions();
@@ -901,7 +901,7 @@ abstract class Connection
      * @throws ModelNotFoundException
      * @throws DataNotFoundException
      */
-    public function select(Query $query)
+    public function get(Query $query)
     {
         // 分析查询表达式
         $options = $query->getOptions();

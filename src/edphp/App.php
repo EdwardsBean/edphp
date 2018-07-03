@@ -63,6 +63,12 @@ class App
      * @var string
      */
     protected $rootPath;
+    
+    /**
+     * 运行时目录
+     * @var string
+     */
+    protected $runtimePath;
 
     /**
      * 配置目录
@@ -76,6 +82,7 @@ class App
         $this->appPath = $rootPath . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR;
         $this->configPath = $this->rootPath . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR;
         $this->frameworkPath = __DIR__ . DIRECTORY_SEPARATOR;
+        $this->runtimePath = $this->rootPath . 'runtime' . DIRECTORY_SEPARATOR;
 
         // 注册错误和异常处理机制
         Error::register();
@@ -196,7 +203,7 @@ class App
         $config = Config::getInstance();
         $this->config = $config;
         $this->middleware = new Middleware;
-        $this->request = new Request;
+        $this->request = Request::getInstance();
         $this->dispatcher = new Dispatcher($this->request, $this->middleware);
     }
 
@@ -210,4 +217,39 @@ class App
         return static::VERSION;
     }
 
+    public static function getInstance()
+    {
+        return self::$instance;
+    }
+
+    /**
+     * 获取应用运行时目录
+     * @access public
+     * @return string
+     */
+    public function getRuntimePath()
+    {
+        return $this->runtimePath;
+    }
+
+    
+    /**
+     * 获取应用开启时间
+     * @access public
+     * @return float
+     */
+    public function getBeginTime()
+    {
+        return $this->beginTime;
+    }
+
+    /**
+     * 获取应用初始内存占用
+     * @access public
+     * @return integer
+     */
+    public function getBeginMem()
+    {
+        return $this->beginMem;
+    }
 }

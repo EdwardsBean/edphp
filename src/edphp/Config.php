@@ -107,6 +107,7 @@ class Config implements \ArrayAccess
             return $this->config;
         }
 
+        //没带点号，则默认取app.$name
         if (!strpos($name, '.')) {
             $name = $this->prefix . '.' . $name;
         } elseif ('.' == substr($name, -1)) {
