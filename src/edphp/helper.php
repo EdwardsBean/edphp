@@ -2,6 +2,7 @@
 
 use edphp\Db;
 use edphp\Log;
+use edphp\Session;
 use edphp\Response;
 use edphp\exception\HttpException;
 use edphp\exception\HttpResponseException;
@@ -323,5 +324,55 @@ if (!function_exists('token')) {
         $token = Request::token($name, $type);
 
         return '<input type="hidden" name="' . $name . '" value="' . $token . '" />';
+    }
+}
+
+if (!function_exists('session')) {
+    /**
+     * Session管理
+     * @param string|array  $name session名称，如果为数组表示进行session设置
+     * @param mixed         $value session值
+     * @param string        $prefix 前缀
+     * @return mixed
+     */
+    function session($name, $value = '', $prefix = null)
+    {
+        $session = Session::getInstance();
+        if (is_array($name)) {
+            // 初始化
+            $session->init($name);
+        } elseif (is_null($name)) {
+            // 清除
+            $session->clear($value);
+        } elseif ('' === $value) {
+            // 判断或获取
+            return 0 === strpos($name, '?') ? $session->has(substr($name, 1), $prefix) : $session->get($name, $prefix);
+        } elseif (is_null($value)) {
+            // 删除
+            return $session->delete($name, $prefix);
+        } else {
+            // 设置
+            return $session->set($name, $value, $prefix);
+        }
+    }
+}
+
+if (!function_exists('userid')) {
+    /**
+     * Session中取用户id
+     */
+    function userid()
+    {
+        return session('user_id');
+    }
+}
+
+if (!function_exists('user_role')) {
+    /**
+     * Session中取用户角色
+     */
+    function user_role()
+    {
+        return session('user_role');
     }
 }

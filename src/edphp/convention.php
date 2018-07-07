@@ -103,13 +103,18 @@ return [
     // +----------------------------------------------------------------------
 
     'session'  => [
+        //PHPSESSID或token字段名称
+        'name'           => 'X-Token',
+        //设置sessionid
         'id'             => '',
         // SESSION_ID的提交变量,解决flash上传跨域
         'var_session_id' => '',
         // SESSION 前缀
         'prefix'         => 'edphp',
-        // 驱动方式 支持redis memcache memcached
+        //token或者默认cookie方式，token方式将会从Header中取name
         'type'           => '',
+        // 驱动方式，默认使用php自带的session存储。支持redis
+        'driver'           => '',
         // 是否自动开启 SESSION
         'auto_start'     => true,
         'httponly'       => true,
