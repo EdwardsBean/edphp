@@ -509,6 +509,7 @@ class Session
      */
     public function start()
     {
+        //解析header中的token，设置为sessionid, 默认为X-Token
         if ($this->isToken()) {
             $tokenField = 'HTTP_' . str_replace('-', '_', strtoupper($this->config['name']));
             if (key_exists($tokenField, $_SERVER)) {

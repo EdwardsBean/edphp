@@ -2,6 +2,7 @@
 
 use edphp\Db;
 use edphp\Log;
+use edphp\Request;
 use edphp\Session;
 use edphp\Response;
 use edphp\exception\HttpException;
@@ -339,8 +340,9 @@ if (!function_exists('session')) {
     {
         $session = Session::getInstance();
         if (is_array($name)) {
-            // 初始化
-            $session->init($name);
+            foreach ($name as $key => $value) {
+                $session->set($key, $value, $prefix);
+            }
         } elseif (is_null($name)) {
             // 清除
             $session->clear($value);
@@ -374,5 +376,22 @@ if (!function_exists('user_role')) {
     function user_role()
     {
         return session('user_role');
+    }
+}
+
+if (!function_exists('post')) {
+    /**
+     * 自动获取post内容，解析json or xml
+     * 设置获取POST参数
+     * @param  mixed         $name 变量名
+     * @param  mixed         $default 默认值
+     * @param  string|array  $filter 过滤方法
+     * @return mixed
+     * 
+     */
+    function post($name = '', $default = null, $filter = '')
+    {
+        $request = Request::getInstance();
+        return $request->post($name, $default, $filter);
     }
 }

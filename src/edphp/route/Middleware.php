@@ -16,19 +16,20 @@ class Middleware
     {
         $class = $this->defaultNamespace . $interceptor;
         $instance = new $class();
-        array_push($this->queue, $instance);
+        $order = $instance->getOrder();
+        $this->queue[$order] = $instance;
     }
 
     public function preHandle()
     {
-        foreach ($this->queue as $interceptor) {
+        foreach ($this->queue as $order => $interceptor) {
            $interceptor->doPreHandle(); 
         }
     }
 
     public function afterCompletion()
     {
-        foreach ($this->queue as $interceptor) {
+        foreach ($this->queue as $order => $interceptor) {
             $interceptor->doAfterCompletion();
         }
     }

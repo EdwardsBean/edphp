@@ -10,6 +10,9 @@ abstract class Interceptor
 
     protected $letgo;
 
+    //拦截器的顺序，值越小排越前
+    protected $order =  100;
+
     public function doPreHandle()
     {
         if ($this->check()) {
@@ -47,8 +50,14 @@ abstract class Interceptor
             } else if ($route === $path) {
                 $this->letgo = true;
                 return true;
+            } else {
+                return false;
             }
         }
+    }
+
+    public function getOrder() {
+        return $this->order;
     }
 
     /**

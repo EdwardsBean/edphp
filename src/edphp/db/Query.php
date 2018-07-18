@@ -75,7 +75,7 @@ class Query
      */
     private static $readMaster = [];
 
-    private $fastMethod = ['findBy', 'existsBy', 'deleteBy', 'removeBy', 'countBy'];
+    private $fastMethod = ['findby', 'findBy', 'existsBy', 'deleteBy', 'removeBy', 'countBy'];
 
     private $fastLogic = ['And', 'Or', 'In', 'Not', 'Notin', 'Between', 'Gt', 'Gte', 'Lt', 'Lte', 'Like', 'Notlike'];
 

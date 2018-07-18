@@ -261,7 +261,7 @@ class Request
         //初始化session，cookie等
         // $request->session($app['session']->get());
         // $request->cookie($app['cookie']->get());
-        // $request->server($_SERVER);
+        $this->server($_SERVER);
         // $request->env($app['env']->get());
     }
 

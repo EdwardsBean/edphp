@@ -65,37 +65,22 @@ class Handle
      */
     public function render(Exception $e)
     {
-        if (isDebug()) {
-            //TODO 输出错误页面方便调试
-            return $this->renderErrorHtml($e);
-        } else {
+        
+        if (key_exists("HTTP_ACCEPT", $_SERVER) && $_SERVER["HTTP_ACCEPT"] === "application/json") {
             return $this->renderErrorJson($e);
+        } else {
+            return $this->renderErrorHtml($e);
         }
-
     }
 
     protected function renderErrorHtml(Exception $exception)
     {
+        if (!isDebug()) {
+            return Response::create("系统内部错误", 'html');
+        }
+
         // 调试模式，获取详细的错误信息
-        $data = [
-            'name' => get_class($exception),
-            'file' => $exception->getFile(),
-            'line' => $exception->getLine(),
-            'message' => $this->getMessage($exception),
-            'trace' => $exception->getTrace(),
-            'code' => $this->getCode($exception),
-            'source' => $this->getSourceCode($exception),
-            'datas' => $this->getExtendData($exception),
-            'tables' => [
-                'GET Data' => $_GET,
-                'POST Data' => $_POST,
-                'Files' => $_FILES,
-                'Cookies' => $_COOKIE,
-                'Session' => isset($_SESSION) ? $_SESSION : [],
-                'Server/Request Data' => $_SERVER,
-                'Environment Variables' => $_ENV,
-            ],
-        ];
+        $data = $this->getError($exception);
 
         //保留一层
         while (ob_get_level() > 1) {
@@ -124,6 +109,29 @@ class Handle
         return $response;
     }
 
+    private function getError($exception)
+    {
+        return [
+            'name' => get_class($exception),
+            'file' => $exception->getFile(),
+            'line' => $exception->getLine(),
+            'message' => $this->getMessage($exception),
+            'trace' => $exception->getTrace(),
+            'code' => $this->getCode($exception),
+            'source' => $this->getSourceCode($exception),
+            'datas' => $this->getExtendData($exception),
+            'tables' => [
+                'GET Data' => $_GET,
+                'POST Data' => $_POST,
+                'Files' => $_FILES,
+                'Cookies' => $_COOKIE,
+                'Session' => isset($_SESSION) ? $_SESSION : [],
+                'Server/Request Data' => $_SERVER,
+                'Environment Variables' => $_ENV,
+            ],
+        ];
+    }
+
     protected function renderErrorJson(Exception $e)
     {
         // 参数验证错误
@@ -135,6 +143,10 @@ class Handle
             return json(['msg' => $e->getMessage(), 'code' => $e->getStatusCode(), 'success' => false]);
         }
 
+        if (isDebug()) {
+            $error = $this->getError($e);
+            return json(['msg' => $error, 'code' => 500, 'success' => false]);
+        }
         return json(['msg' => 'server error', 'code' => 500, 'success' => false]);
     }
 

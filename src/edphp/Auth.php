@@ -29,9 +29,12 @@ class Auth {
      * 校验账号密码
      */
     public static function attempt() {
-        $username = $_POST['username'];
-        $password = $_POST['password'];
-        $user = db('user')->findByUsername($username);
+        $username = post('username');
+        $password = post('password');
+        if (!$username || !$password) {
+            throw new HttpException(401, '账号或者密码字段未传');
+        }
+        $user = db('user')->findByUsername($username)->getOne();
         if ($user['password'] === md5($password)) {
             //登录成功
             session(['user_id' => $user['id'], 'user_role' => $user['role']]);

@@ -71,6 +71,9 @@ class Dispatcher
 
     public function exec()
     {
+        if($this->request->isOptions()) {
+            return;
+        }
         // 解析默认的URL规则
         $path = $this->request->pathinfo();
         $controller = !empty($path) ? array_shift($path) : null;

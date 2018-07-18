@@ -6,14 +6,20 @@ use edphp\Auth;
 use edphp\Session;
 use edphp\response\Msg;
 
-class User
+class LoginController
 {
 
     //登录接口
     public function signin()
     {
-        $token = Auth::atempt();
-        return Msg::done(['token' => $token]);
+        $token = Auth::attempt();
+        return Msg::success(['token' => $token]);
+    }
+
+    public function info()
+    {
+        $user = db('user')->findById(userid())->exclude('password')->getOne();
+        return Msg::success($user);
     }
 
     public function logout()

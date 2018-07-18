@@ -145,17 +145,6 @@ class App
             include $path . 'common.php';
         }
 
-        //加载中间件
-        if (is_dir($path . 'interceptor')) {
-            $dir = $path . 'interceptor';
-            $files = scandir($dir);
-            foreach ($files as $file) {
-                if ('.' . pathinfo($file, PATHINFO_EXTENSION) === '.php') {
-                    $this->middleware->import(pathinfo($file, PATHINFO_FILENAME));
-                }
-            }
-        }
-
         // 自动读取配置文件
         if (is_dir($path . 'config')) {
             $dir = $path . 'config';
@@ -181,6 +170,17 @@ class App
                 if(is_array($env)) {
                     foreach ($env as $item => $value)
                     $this->config->set($value, $item);
+                }
+            }
+        }
+
+        //加载中间件
+        if (is_dir($path . 'interceptor')) {
+            $dir = $path . 'interceptor';
+            $files = scandir($dir);
+            foreach ($files as $file) {
+                if ('.' . pathinfo($file, PATHINFO_EXTENSION) === '.php') {
+                    $this->middleware->import(pathinfo($file, PATHINFO_FILENAME));
                 }
             }
         }

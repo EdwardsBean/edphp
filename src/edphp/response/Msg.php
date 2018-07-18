@@ -8,16 +8,12 @@ class Msg
 
     public $success = true;
 
-    public static function success($data)
+    public static function success($data = [])
     {
         $m = new Msg();
-        $m->data = $data;
-        return $m;
-    }
-
-    public static function done()
-    {
-        $m = new Msg();
+        if(!empty($data)) {
+            $m->data = $data;
+        }
         return $m;
     }
 
