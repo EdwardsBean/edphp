@@ -17,6 +17,9 @@ class Middleware
         $class = $this->defaultNamespace . $interceptor;
         $instance = new $class();
         $order = $instance->getOrder();
+        if(!$order) {
+            $order = count($this->queue) +  time();
+        }
         $this->queue[$order] = $instance;
     }
 

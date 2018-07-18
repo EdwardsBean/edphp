@@ -20,7 +20,7 @@ class Auth {
      */
     public static function check() {
         $userId = self::userId();
-        if($userId) {
+        if(empty($userId)) {
             throw new HttpException(401, "未登录");
         }
     }

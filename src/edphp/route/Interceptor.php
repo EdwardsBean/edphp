@@ -10,8 +10,8 @@ abstract class Interceptor
 
     protected $letgo;
 
-    //拦截器的顺序，值越小排越前
-    protected $order =  100;
+    //拦截器的顺序，值越小排越前.没有则默认用时间戳赋值
+    protected $order;
 
     public function doPreHandle()
     {
