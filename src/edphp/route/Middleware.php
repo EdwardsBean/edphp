@@ -21,6 +21,7 @@ class Middleware
             $order = count($this->queue) +  time();
         }
         $this->queue[$order] = $instance;
+        ksort($this->queue);
     }
 
     public function preHandle()

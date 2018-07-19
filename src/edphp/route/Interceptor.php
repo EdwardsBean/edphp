@@ -50,10 +50,9 @@ abstract class Interceptor
             } else if ($route === $path) {
                 $this->letgo = true;
                 return true;
-            } else {
-                return false;
             }
         }
+        return false;
     }
 
     public function getOrder() {
