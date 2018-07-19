@@ -66,7 +66,7 @@ class Handle
     public function render(Exception $e)
     {
         
-        if (key_exists("HTTP_ACCEPT", $_SERVER) && $_SERVER["HTTP_ACCEPT"] === "application/json") {
+        if (key_exists("HTTP_ACCEPT", $_SERVER) && false !== strpos($_SERVER["HTTP_ACCEPT"], 'application/json')) {
             return $this->renderErrorJson($e);
         } else {
             return $this->renderErrorHtml($e);
@@ -136,18 +136,18 @@ class Handle
     {
         // 参数验证错误
         if ($e instanceof \edphp\exception\ValidateException) {
-            return json(['msg' => 'no route found', 'code' => 422, 'success' => false]);
+            return json(['message' => 'no route found', 'code' => 422, 'success' => false]);
         }
         // 请求异常
         if ($e instanceof \edphp\exception\HttpException) {
-            return json(['msg' => $e->getMessage(), 'code' => $e->getStatusCode(), 'success' => false]);
+            return json(['message' => $e->getMessage(), 'code' => $e->getStatusCode(), 'success' => false]);
         }
 
         if (isDebug()) {
             $error = $this->getError($e);
-            return json(['msg' => $error, 'code' => 500, 'success' => false]);
+            return json(['detail' => $error, 'message' => $e->getMessage() , 'code' => 500, 'success' => false]);
         }
-        return json(['msg' => 'server error', 'code' => 500, 'success' => false]);
+        return json(['message' => 'server error', 'code' => 500, 'success' => false]);
     }
 
     /**

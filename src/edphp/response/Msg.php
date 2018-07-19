@@ -22,7 +22,7 @@ class Msg
         $m = new Msg();
         $m->success = false;
         $m->code = $code;
-        $m->msg = $msg;
+        $m->message = $msg;
         return $m;
     }
 }

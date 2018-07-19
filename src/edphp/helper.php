@@ -108,7 +108,7 @@ if (!function_exists('controller')) {
             return invokeClass($class);
         }
 
-        throw new ClassNotFoundException('class not exists:' . $class, $class);
+        throw new HttpException(405, 'route not found');
     }
 }
 
