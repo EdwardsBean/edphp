@@ -21,6 +21,8 @@ return [
         'root_namespace'         => [],
         // 默认输出类型
         'default_return_type'    => 'json',
+        //是否默认使用Msg对象包裹控制器输出
+        'wrap_return_object'     => true,
         // 默认AJAX 数据返回格式,可选json xml ...
         'default_ajax_return'    => 'json',
         // 默认JSONP格式返回的处理方法

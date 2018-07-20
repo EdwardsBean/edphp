@@ -1096,10 +1096,6 @@ abstract class Connection
     {
         $options = $query->getOptions();
 
-        if (isset($options['cache']) && is_string($options['cache']['key'])) {
-            $key = $options['cache']['key'];
-        }
-
         $pk   = $query->getPk($options);
         $data = $options['data'];
 
@@ -1107,9 +1103,6 @@ abstract class Connection
             // 如果存在主键数据 则自动作为更新条件
             if (is_string($pk) && isset($data[$pk])) {
                 $where[$pk] = [$pk, '=', $data[$pk]];
-                if (!isset($key)) {
-                    $key = $this->getCacheKey($query, $data[$pk]);
-                }
                 unset($data[$pk]);
             } elseif (is_array($pk)) {
                 // 增加复合主键支持
@@ -1131,13 +1124,7 @@ abstract class Connection
                 $options['where']['AND'] = $where;
                 $query->setOption('where', ['AND' => $where]);
             }
-        } elseif (!isset($key) && is_string($pk) && isset($options['where']['AND'])) {
-            foreach ($options['where']['AND'] as $val) {
-                if (is_array($val) && $val[0] == $pk) {
-                    $key = $this->getCacheKey($query, $val);
-                }
-            }
-        }
+        } 
 
         // 更新数据
         $query->setOption('data', $data);
@@ -1151,27 +1138,14 @@ abstract class Connection
             return $this->getRealSql($sql, $bind);
         }
 
-        // 检测缓存
-        $cache = Container::get('cache');
-
-        if (isset($key) && $cache->get($key)) {
-            // 删除缓存
-            $cache->rm($key);
-        } elseif (!empty($options['cache']['tag'])) {
-            $cache->clear($options['cache']['tag']);
-        }
-
         // 执行操作
         $result = '' == $sql ? 0 : $this->execute($sql, $bind, $query);
 
         if ($result) {
             if (is_string($pk) && isset($where[$pk])) {
                 $data[$pk] = $where[$pk];
-            } elseif (is_string($pk) && isset($key) && strpos($key, '|')) {
-                list($a, $val) = explode('|', $key);
-                $data[$pk]     = $val;
-            }
-
+            } 
+            
             $query->setOption('data', $data);
             $query->trigger('after_update');
         }

@@ -24,6 +24,9 @@ composer.json中加入需要autoload的目录或文件，修改后要重新compo
 composer require "edphp/framework @dev"
 ```
 
+### 控制器相关
+wrap_return_object参数默认为true。控制器返回数据统一用Msg对象包装起来。也可以控制器直接返回Msg对象。
+
 ### 数据库操作
 DB 初始化
 
@@ -44,7 +47,7 @@ db('accounts')->whereBetween('votes', [1, 100])->get();
 db('accounts')->where('username', 'edwardsbean')->getOne();
 db('accounts')->where(['username'=>'edwardsbean'])->get();
 db('accounts')->where('username', 'edwardsbean')->order('age', 'desc')->get(); //多字段排序？？？
-db('accounts')->where('username', 'edwardsbean')->paginate(0, 20)->get();
+db('accounts')->where('username', 'edwardsbean')->paginate(0, 20);
 
 //update with id
 db('accounts')->save(['id'=>1, 'username'=>'edwardsbean']);

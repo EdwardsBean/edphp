@@ -1788,7 +1788,7 @@ class Query
         $page = $page < 1 ? 1 : $page;
 
         $options = $this->getOptions();
-
+        $bind    = $this->bind;
         $total   = $this->count();
         $results = $this->options($options)->bind($bind)->page($page, $pageSize)->get();
         $data = [
@@ -2628,6 +2628,18 @@ class Query
         }
 
         return $this;
+    }
+
+    /**
+     * 插入或者更新，如果id在则为更新
+     */
+    public function save(array $data = [], $replace = false, $getLastInsID = false)
+    {
+        if (key_exists('id', $data) && !empty($data['id'])) {
+            $this->update($data);
+        } else {
+            $this->insert($data, $replace, $getLastInsID);
+        }
     }
 
     /**

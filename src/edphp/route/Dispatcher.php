@@ -2,11 +2,12 @@
 
 namespace edphp\route;
 
-use ReflectionMethod;
-use edphp\exception\HttpException;
-use edphp\exception\ClassNotFoundException;
 use edphp\Request;
 use edphp\Response;
+use ReflectionMethod;
+use edphp\response\Msg;
+use edphp\exception\HttpException;
+use edphp\exception\ClassNotFoundException;
 
 class Dispatcher
 {
@@ -53,17 +54,14 @@ class Dispatcher
     {
         if ($data instanceof Response) {
             $response = $data;
-        } elseif (!is_null($data)) {
+        } else {
             // 默认自动识别响应输出类型
             $isAjax = $this->request->isAjax();
             $type   = config('default_return_type');
-
+            if (config('wrap_return_object') && !$data instanceof Msg) {
+                $data = Msg::success($data);
+            }
             $response = Response::create($data, $type);
-        } else {
-            $data     = ob_get_clean();
-            $data     = false === $data ? '' : $data;
-            $status   = '' === $data ? 204 : 200;
-            $response = Response::create($data, '', $status);
         }
 
         return $response;

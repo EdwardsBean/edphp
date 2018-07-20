@@ -24,7 +24,7 @@ class LoginController
 
     public function logout()
     {
-        Session::destroy();
+        Session::getInstance()->destroy();
     }
 
 }

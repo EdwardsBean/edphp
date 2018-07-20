@@ -2,7 +2,7 @@
 
 namespace edphp\exception;
 
-use think\Exception;
+use edphp\Exception;
 
 /**
  * Database相关异常处理类

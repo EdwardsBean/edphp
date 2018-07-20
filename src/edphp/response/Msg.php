@@ -11,9 +11,7 @@ class Msg
     public static function success($data = [])
     {
         $m = new Msg();
-        if(!empty($data)) {
-            $m->data = $data;
-        }
+        $m->data = $data;
         return $m;
     }
 
