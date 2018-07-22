@@ -187,7 +187,7 @@ abstract class Connection
             }
 
             //根据配置，初始化mysql or mongo connection
-            self::$instance[$name] = invokeClass('edphp\\db\\connector\\' . $config['type'], [$config]);
+            self::$instance[$name] = invokeClass('edphp\\db\\connector\\' . ucfirst($config['type']), [$config]);
         }
 
         return self::$instance[$name];
