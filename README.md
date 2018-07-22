@@ -27,6 +27,12 @@ composer require "edphp/framework @dev"
 ### 控制器相关
 wrap_return_object参数默认为true。控制器返回数据统一用Msg对象包装起来。也可以控制器直接返回Msg对象。
 
+/Address/list
+对应控制器Address类的list方法。
+
+/express_type/find_one
+对应ExpressType类的findOne方法
+
 ### 数据库操作
 DB 初始化
 

@@ -133,7 +133,7 @@ class Dispatcher
 
     public function parseAction($action)
     {
-        $action = $this->parseName($action, 1);
+        $action = $this->parseName($action, 1, false);
         return $action;
     }
 
