@@ -85,7 +85,7 @@ class Dispatcher
         $methodAction = $this->parseMethodAction($action);
 
         try {
-            $instance = controller($this->parseName($controller, 1));
+            $instance = controller($controller);
         } catch (ClassNotFoundException $e) {
             throw new HttpException(404, 'controller not exists:' . $e->getClass());
         }
