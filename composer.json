@@ -7,8 +7,7 @@
             "name": "edwardsbean",
             "email": "edwardsbean@gmail.com"
         }
-    ],
-	"minimum-stability": "dev",
+    ]
     "require": {
     },
     "require-dev": {
