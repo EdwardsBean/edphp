@@ -359,11 +359,11 @@ if (!function_exists('session')) {
     }
 }
 
-if (!function_exists('userid')) {
+if (!function_exists('user_id')) {
     /**
      * Session中取用户id
      */
-    function userid()
+    function user_id()
     {
         return session('user_id');
     }
@@ -393,5 +393,19 @@ if (!function_exists('post')) {
     {
         $request = Request::getInstance();
         return $request->post($name, $default, $filter);
+    }
+}
+
+if (!function_exists('I')) {
+    /**
+     * 自动获取请求参数，不管是get，还是post
+     * @param  mixed         $name 变量名
+     * @return mixed
+     * 
+     */
+    function I($name = '')
+    {
+        $request = Request::getInstance();
+        return $request->param($name);
     }
 }

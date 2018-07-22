@@ -60,6 +60,7 @@ class CurdController
         $r = explode("\\", $class);
         $len = count($r);
         $table = $r[$len - 1];
-        return strtolower($table);
+        $table = parseName($table);
+        return $table;
     }
 }

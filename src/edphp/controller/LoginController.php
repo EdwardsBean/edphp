@@ -18,7 +18,7 @@ class LoginController
 
     public function info()
     {
-        $user = db('user')->findById(userid())->exclude('password')->getOne();
+        $user = db('user')->findById(user_id())->exclude('password')->getOne();
         return Msg::success($user);
     }
 

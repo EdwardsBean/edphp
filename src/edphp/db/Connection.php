@@ -1884,8 +1884,8 @@ abstract class Connection
     protected function debug($start, $sql = '', $master = false)
     {
         if (!empty($this->config['debug'])) {
-            // 开启数据库调试模式
-            $debug = Container::get('debug');
+            // 开启数据库调试模式);
+            $debug = Debug::getInstance();
 
             if ($start) {
                 $debug->remark('queryStartTime', 'time');
@@ -1954,7 +1954,7 @@ abstract class Connection
 
     public function log($log, $type = 'sql')
     {
-        $this->config['debug'] && Container::get('log')->record($log, $type);
+        $this->config['debug'] && record($log, $type);
     }
 
     /**
