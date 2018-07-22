@@ -190,7 +190,7 @@ class Dispatcher
             } elseif ($param->isDefaultValueAvailable()) {
                 $args[] = $param->getDefaultValue();
             } else {
-                throw new InvalidArgumentException('method param miss:' . $name);
+                throw new \InvalidArgumentException('method param miss:' . $name);
             }
         }
 
