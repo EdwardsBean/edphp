@@ -190,7 +190,7 @@ return [
         // 是否需要进行SQL性能分析
         'sql_explain'     => false,
         // 查询对象
-        'query'           => '\\edphp\\db\\Query',
+        'query'           => 'edphp\\db\\Query',
     ],
 
     //分页配置

@@ -27,7 +27,7 @@ class Sqlsrv extends Connection
         PDO::ATTR_STRINGIFY_FETCHES => false,
     ];
 
-    protected $builder = '\\edphp\\db\\builder\\Sqlsrv';
+    protected $builder = 'edphp\\db\\builder\\Sqlsrv';
 
     /**
      * 解析pdo连接的dsn信息

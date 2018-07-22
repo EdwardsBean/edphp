@@ -98,7 +98,7 @@ abstract class Connection
         // Builder类
         'builder'         => '',
         // Query类
-        'query'           => '\\edphp\\db\\Query',
+        'query'           => 'edphp\\db\\Query',
         // 是否需要断线重连
         'break_reconnect' => false,
         // 断线标识字符串

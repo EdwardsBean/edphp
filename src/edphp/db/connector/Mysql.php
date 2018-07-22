@@ -21,7 +21,7 @@ use edphp\db\Query;
 class Mysql extends Connection
 {
 
-    protected $builder = '\\edphp\\db\\builder\\Mysql';
+    protected $builder = 'edphp\\db\\builder\\Mysql';
 
     /**
      * 初始化

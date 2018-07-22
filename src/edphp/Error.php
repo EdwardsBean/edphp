@@ -117,7 +117,7 @@ class Error {
             // 异常处理handle
             $class = self::$exceptionHandler;
 
-            if ($class && is_string($class) && class_exists($class) && is_subclass_of($class, "\\edphp\\exception\\Handle")) {
+            if ($class && is_string($class) && class_exists($class) && is_subclass_of($class, "edphp\\exception\\Handle")) {
                 $handle = new $class;
             } else {
                 //未设置，使用默认Handle

@@ -20,7 +20,7 @@ use edphp\db\Connection;
 class Sqlite extends Connection
 {
 
-    protected $builder = '\\edphp\\db\\builder\\Sqlite';
+    protected $builder = 'edphp\\db\\builder\\Sqlite';
 
     /**
      * 解析pdo连接的dsn信息

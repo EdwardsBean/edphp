@@ -94,7 +94,7 @@ class Log
             $this->allowWrite = false;
         }
 
-        $this->driver = invokeClass('\\edphp\\log\\driver\\' . $type, [$config]);
+        $this->driver = invokeClass('edphp\\log\\driver\\' . $type, [$config]);
 
         return $this;
     }

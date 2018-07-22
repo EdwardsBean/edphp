@@ -52,7 +52,7 @@ class Mongo
     protected $linkRead;
     protected $linkWrite;
     // Builder对象
-    protected $builder = '\\edphp\\db\\builder\\Mongo';
+    protected $builder = 'edphp\\db\\builder\\Mongo';
     // 返回或者影响记录数
     protected $numRows = 0;
     // 错误信息
@@ -114,7 +114,7 @@ class Mongo
         // typeMap
         'type_map'        => ['root' => 'array', 'document' => 'array'],
         // Query对象
-        'query'           => '\\edphp\\mongo\\Query',
+        'query'           => 'edphp\\mongo\\Query',
     ];
 
     /**

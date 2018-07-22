@@ -92,7 +92,7 @@ class Response
      */
     public static function create($data = '', $type = '', $code = 200, array $header = [], $options = [])
     {
-        $class = false !== strpos($type, '\\') ? $type : '\\edphp\\response\\' . ucfirst(strtolower($type));
+        $class = false !== strpos($type, '\\') ? $type : 'edphp\\response\\' . ucfirst(strtolower($type));
 
         if (class_exists($class)) {
             return new $class($data, $code, $header, $options);

@@ -44,7 +44,7 @@ class Db
         self::$config = $config;
 
         if (empty($config['query'])) {
-            self::$config['query'] = '\\edphp\\db\\Query';
+            self::$config['query'] = 'edphp\\db\\Query';
         }
     }
 

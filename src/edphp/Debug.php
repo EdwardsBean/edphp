@@ -250,7 +250,7 @@ class Debug
 
         unset($config['type']);
 
-        $trace = Loader::factory($type, '\\edphp\\debug\\', $config);
+        $trace = Loader::factory($type, 'edphp\\debug\\', $config);
 
         if ($response instanceof Redirect) {
             //TODO 记录

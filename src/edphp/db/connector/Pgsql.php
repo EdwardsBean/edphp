@@ -19,7 +19,7 @@ use edphp\db\Connection;
  */
 class Pgsql extends Connection
 {
-    protected $builder = '\\edphp\\db\\builder\\Pgsql';
+    protected $builder = 'edphp\\db\\builder\\Pgsql';
 
     // PDO连接参数
     protected $params = [

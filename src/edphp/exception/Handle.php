@@ -10,7 +10,7 @@ class Handle
     protected $render;
     //
     protected $ignoreReport = [
-        '\\edphp\\exception\\HttpException',
+        'edphp\\exception\\HttpException',
     ];
 
     public function setRender($render)
