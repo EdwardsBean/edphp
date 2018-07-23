@@ -123,9 +123,11 @@ class App
         // 加载惯例配置文件
         $this->config->set(include $this->frameworkPath . 'convention.php');
 
-
-        //初始化用户配置
+        // 初始化用户配置
         $this->init();
+
+        // 设置系统时区
+        date_default_timezone_set(config('app.default_timezone'));
 
         // 注册异常处理类
         if (config('app.exception_handle')) {
