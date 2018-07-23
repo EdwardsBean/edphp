@@ -37,7 +37,7 @@ class Auth {
         $user = db('user')->findByUsername($username)->getOne();
         if ($user['password'] === md5($password)) {
             //登录成功
-            session(['user_id' => $user['id'], 'user_role' => $user['role']]);
+            session(['user_id' => $user['id'], 'user_role' => $user['role'], 'user' => $user]);
             return session_id();
         } else {
             throw new HttpException(401, '账号或者密码错误');

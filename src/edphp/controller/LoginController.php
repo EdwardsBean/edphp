@@ -13,13 +13,12 @@ class LoginController
     public function signin()
     {
         $token = Auth::attempt();
-        return Msg::success(['token' => $token]);
+        return ['token' => $token];
     }
 
     public function info()
     {
-        $user = db('user')->findById(user_id())->exclude('password')->getOne();
-        return Msg::success($user);
+        return db('user')->findById(user_id())->exclude('password')->getOne();
     }
 
     public function logout()

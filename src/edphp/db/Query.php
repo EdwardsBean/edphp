@@ -689,7 +689,7 @@ class Query
     }
 
     /**
-     * COUNT查询
+     * COUNT查询, 和group by搭配只适用于查询分组数量，而不是每个分组下的数量
      * @access public
      * @param  string $field 字段名
      * @return integer|string
