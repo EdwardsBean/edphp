@@ -9,34 +9,37 @@ use edphp\exception\HttpException;
  */
 class CurdController
 {
+    // 权限表 ["save" => "admin"]
     protected $permission;
 
+    // 设定后，该控制器所有方法，只允许该角色访问，优先级大于$permission
+    protected $role;
+
     function list() {
-        $this->checkPermission();
         return db($this->getTable())->get();
     }
 
     public function save()
     {
-        $this->checkPermission();
         //存在id则自动更新
         db($this->getTable())->save(post());
     }
 
     public function delete($id)
     {
-        $this->checkPermission();
         return db($this->getTable())->delete($id);
     }
 
     public function one($id)
     {
-        $this->checkPermission();
         return db($this->getTable())->getOne($id);
     }
 
-    private function checkPermission() {
-        if ($this->permission) {
+    //该方法将在Dispatch处调用，检查用户是否有调用该控制器的权限
+    public function checkPermission() {
+        if ($this->role && $this->role !== user_role()) {
+            throw new HttpException(403, "you don't have the permission");
+        } elseif ($this->permission) {
             $called_method = debug_backtrace()[1]['function'];
             if (key_exists($called_method, $this->permission)) {
                 if (strpos($this->permission[$called_method], ",")) {
@@ -49,7 +52,7 @@ class CurdController
                 } elseif($this->permission[$called_method] == user_role()){
                     return;
                 }
-                throw HttpException(403, "you don't have the permission");
+                throw new HttpException(403, "you don't have the permission");
             }
         }
     }

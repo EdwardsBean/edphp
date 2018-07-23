@@ -224,7 +224,7 @@ class Query
                 $logic = true;
             }
         }
-        if ('findBy' === $fastKey) {
+        if ('findBy' === $fastKey || 'findby' === $fastKey) {
             return $this;
         } else if ('deleteBy' === $fastKey) {
             return $this->delete();

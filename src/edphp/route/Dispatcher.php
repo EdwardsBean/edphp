@@ -2,12 +2,12 @@
 
 namespace edphp\route;
 
+use edphp\exception\ClassNotFoundException;
+use edphp\exception\HttpException;
 use edphp\Request;
 use edphp\Response;
-use ReflectionMethod;
 use edphp\response\Msg;
-use edphp\exception\HttpException;
-use edphp\exception\ClassNotFoundException;
+use ReflectionMethod;
 
 class Dispatcher
 {
@@ -22,7 +22,7 @@ class Dispatcher
     protected $path;
 
     protected $var;
-    
+
     protected $middleware;
 
     public function __construct(Request $request, Middleware $middleware)
@@ -57,7 +57,7 @@ class Dispatcher
         } else {
             // 默认自动识别响应输出类型
             $isAjax = $this->request->isAjax();
-            $type   = config('default_return_type');
+            $type = config('default_return_type');
             if (config('wrap_return_object') && !$data instanceof Msg) {
                 $data = Msg::success($data);
             }
@@ -69,7 +69,7 @@ class Dispatcher
 
     public function exec()
     {
-        if($this->request->isOptions()) {
+        if ($this->request->isOptions()) {
             return;
         }
         // 解析默认的URL规则
@@ -93,16 +93,26 @@ class Dispatcher
         if (is_callable([$instance, $action])) {
             // 严格获取当前操作方法名
             $reflect = new ReflectionMethod($instance, $action);
-        $call = [$instance, $action];
-        } else if(is_callable([$instance, $methodAction])) {
+            $call = [$instance, $action];
+        } else if (is_callable([$instance, $methodAction])) {
             $reflect = new ReflectionMethod($instance, $methodAction);
         } else {
             // 操作不存在
             throw new HttpException(404, 'method not exists:' . get_class($instance) . '->' . $action . '()');
         }
+        $this->checkControllerPermission($instance);
         $methodName = $reflect->getName();
         $vars = $this->request->param();
         return $this->invokeReflectMethod($instance, $reflect, $vars);
+    }
+
+    private function checkControllerPermission($instance) {
+        //如果该控制器，有定义checkPermission方法，则调用之
+        $checkPermission = "checkPermission";
+        if (method_exists($instance, $checkPermission)) {
+           $reflect = new ReflectionMethod($instance, $checkPermission);
+           $reflect->invokeArgs($instance, []);
+        }
     }
 
     /**
@@ -143,7 +153,7 @@ class Dispatcher
         $method = strtolower($this->request->method());
         return $method . $action;
     }
-        /**
+    /**
      * 调用反射执行类的方法 支持参数绑定
      * @access public
      * @param  object  $instance 对象实例
@@ -154,11 +164,10 @@ class Dispatcher
     public function invokeReflectMethod($instance, $reflect, $vars = [])
     {
         $args = $this->bindParams($reflect, $vars);
-
         return $reflect->invokeArgs($instance, $args);
     }
 
-        /**
+    /**
      * 绑定参数
      * @access protected
      * @param  \ReflectionMethod|\ReflectionFunction $reflect 反射类
@@ -173,11 +182,11 @@ class Dispatcher
 
         // 判断数组类型 数字数组时按顺序绑定参数
         reset($vars);
-        $type   = key($vars) === 0 ? 1 : 0;
+        $type = key($vars) === 0 ? 1 : 0;
         $params = $reflect->getParameters();
 
         foreach ($params as $param) {
-            $name  = $param->getName();
+            $name = $param->getName();
             $class = $param->getClass();
 
             if ($class) {
