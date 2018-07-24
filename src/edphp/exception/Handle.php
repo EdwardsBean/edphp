@@ -138,8 +138,8 @@ class Handle
         if ($e instanceof \edphp\exception\ValidateException) {
             return json(['message' => 'no route found', 'code' => 422, 'success' => false]);
         }
-        // 请求异常
-        if ($e instanceof \edphp\exception\HttpException) {
+        // 请求异常,业务逻辑异常
+        if ($e instanceof \edphp\exception\HttpException || e instanceof \edphp\exception\BizException) {
             return json(['message' => $e->getMessage(), 'code' => $e->getStatusCode(), 'success' => false]);
         }
 
