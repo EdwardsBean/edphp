@@ -420,3 +420,20 @@ if (!function_exists('I')) {
         return $request->param($name);
     }
 }
+
+
+if (!function_exists('array_remove')) {
+
+    /**
+     * 删除数组中的一个元素，并返回值
+     */
+    function array_remove(array &$arr, $key)
+    {
+        if (array_key_exists($key, $arr)) {
+            $val = $arr[$key];
+            unset($arr[$key]);
+            return $val;
+        }
+        return null;
+    }
+}
