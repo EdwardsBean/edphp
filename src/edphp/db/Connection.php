@@ -689,6 +689,7 @@ abstract class Connection
                 return $this->close()->query($sql, $bind, $master, $pdo);
             }
 
+            record($this->getError());
             throw new PDOException($e, $this->config, $this->getLastsql());
         } catch (\Throwable $e) {
             if ($this->isBreak($e)) {
@@ -773,6 +774,7 @@ abstract class Connection
                 return $this->close()->execute($sql, $bind, $query);
             }
 
+            record($this->getError());
             throw new PDOException($e, $this->config, $this->getLastsql());
         } catch (\Throwable $e) {
             if ($this->isBreak($e)) {
@@ -1867,7 +1869,7 @@ abstract class Connection
         }
 
         if ('' != $this->queryStr) {
-            $error .= "\n [ SQL语句 ] : " . $this->getLastsql();
+            $error .= "\n [ 错误SQL语句 ] : " . $this->getLastsql();
         }
 
         return $error;

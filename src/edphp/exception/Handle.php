@@ -40,7 +40,7 @@ class Handle
             if (config('log.record_trace')) {
                 $log .= "\r\n" . $exception->getTraceAsString();
             }
-
+            
             record($log, 'error');
         }
     }

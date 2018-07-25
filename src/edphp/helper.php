@@ -304,6 +304,22 @@ if (!function_exists('record')) {
     }
 }
 
+if (!function_exists('write')) {
+    /**
+     * 记录日志信息
+     * @access public
+     * @param  mixed  $msg       日志信息
+     * @param  string $type      日志级别
+     * @param  array  $context   替换内容
+     * @return $this
+     */
+    function write($msg, $type = 'info', array $context = [])
+    {
+       $log = Log::getInstance();
+       $log->record($msg, $type);
+    }
+}
+
 if (!function_exists('debug')) {
     function debug($msg, $type = 'info', array $context = [])
     {

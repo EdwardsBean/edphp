@@ -11,8 +11,6 @@
 
 namespace edphp;
 
-use edphp\App;
-
 class Log
 {
     const EMERGENCY = 'emergency';
@@ -57,15 +55,8 @@ class Log
      */
     public $allowWrite = true;
 
-    /**
-     * 应用对象
-     * @var App
-     */
-    protected $app;
-
     public function __construct()
     {
-        $this->app = App::getInstance();
     }
 
     public static function getInstance()
@@ -133,13 +124,8 @@ class Log
             $msg = strtr($msg, $replace);
         }
 
-        if (PHP_SAPI == 'cli') {
-            // 命令行日志实时写入
-            $this->write($msg, $type, true);
-        } else {
-            $this->log[$type][] = $msg;
-        }
-
+        $this->log[$type][] = $msg;
+        
         return $this;
     }
 
@@ -257,9 +243,6 @@ class Log
         } else {
             return false;
         }
-
-        // 监听log_write
-        $this->app['hook']->listen('log_write', $log);
 
         // 写入日志
         return $this->driver->save($log, false);
