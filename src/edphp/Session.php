@@ -514,9 +514,10 @@ class Session
             $tokenField = 'HTTP_' . str_replace('-', '_', strtoupper($this->config['name']));
             if (key_exists($tokenField, $_SERVER)) {
                 $token = $_SERVER[$tokenField];
-                if ($token && strlen($token) > 20 && strlen($token) < 40) {
-                    session_id($token);
-                }
+                session_id($token);
+            } elseif (isset($_GET['token'])) {
+                $token = array_remove($_GET, 'token');
+                session_id($token);
             }
         }
         session_start();
