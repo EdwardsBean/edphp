@@ -65,6 +65,9 @@ db('accounts')->saveAll(['username'=>'edwardsbean']);
 ##### Raw Query
 DB::insert/update/delete/statement('insert into users (id, name) values (?, ?)', [1, 'Dayle']);
 
+##### 原生查询
+db()->query/execute("sql");
+
 ##### Method Query
 输入参数大于1个时，需使用array
 查询关键字：

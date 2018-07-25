@@ -1,13 +1,12 @@
 <?php
 
 use edphp\Db;
-use edphp\Log;
-use edphp\Request;
-use edphp\Session;
-use edphp\Response;
 use edphp\exception\HttpException;
 use edphp\exception\HttpResponseException;
-
+use edphp\Log;
+use edphp\Request;
+use edphp\Response;
+use edphp\Session;
 
 if (!function_exists('abort')) {
     /**
@@ -55,7 +54,7 @@ if (!function_exists('isDebug')) {
      */
     function isDebug()
     {
-       return config('app.app_debug');
+        return config('app.app_debug');
     }
 }
 
@@ -64,7 +63,7 @@ if (!function_exists('db')) {
      * 实例化数据库类
      * @param string        $name 操作的数据表名称（不含前缀）
      * @param array|string  $config 数据库配置参数
-     * @param bool          $force 是否强制使用新的链接 
+     * @param bool          $force 是否强制使用新的链接
      * @return \edphp\db\Query
      */
     function db($name = '', $config = [], $force = false)
@@ -178,7 +177,7 @@ if (!function_exists('invokeFunction')) {
 }
 
 if (!function_exists('bindParams')) {
-        /**
+    /**
      * 绑定参数
      * @access protected
      * @param  \ReflectionMethod|\ReflectionFunction $reflect 反射类
@@ -193,11 +192,11 @@ if (!function_exists('bindParams')) {
 
         // 判断数组类型 数字数组时按顺序绑定参数
         reset($vars);
-        $type   = key($vars) === 0 ? 1 : 0;
+        $type = key($vars) === 0 ? 1 : 0;
         $params = $reflect->getParameters();
 
         foreach ($params as $param) {
-            $name  = $param->getName();
+            $name = $param->getName();
             $class = $param->getClass();
 
             if ($class) {
@@ -253,7 +252,7 @@ if (!function_exists('invoke')) {
 }
 
 if (!function_exists('parseName')) {
-        /**
+    /**
      * 字符串命名风格转换
      * type 0 将Java风格转换为C的风格 1 将C风格转换为Java的风格
      * @access public
@@ -277,7 +276,7 @@ if (!function_exists('parseName')) {
 }
 
 if (!function_exists('record')) {
-        /**
+    /**
      * 记录日志信息
      * @access public
      * @param  mixed  $msg       日志信息
@@ -306,7 +305,8 @@ if (!function_exists('record')) {
 }
 
 if (!function_exists('debug')) {
-    function debug($msg, $type = 'info', array $context = []) {
+    function debug($msg, $type = 'info', array $context = [])
+    {
         if (isDebug()) {
             record($msg, $type, $context);
         }
@@ -398,7 +398,7 @@ if (!function_exists('post')) {
      * @param  mixed         $default 默认值
      * @param  string|array  $filter 过滤方法
      * @return mixed
-     * 
+     *
      */
     function post($name = '', $default = null, $filter = '')
     {
@@ -412,7 +412,7 @@ if (!function_exists('I')) {
      * 自动获取请求参数，不管是get，还是post
      * @param  mixed         $name 变量名
      * @return mixed
-     * 
+     *
      */
     function I($name = '')
     {
