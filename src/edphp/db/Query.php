@@ -1584,15 +1584,21 @@ class Query
             return $this->parseArrayWhereItems($field, $logic);
         } elseif ($field instanceof \Closure) {
             $where = $field;
+        } elseif(is_int($field) && is_null($op)) {
+            // 只传了一个参数，默认使用id去查询
+            $where = $this->parseWhereItem($logic, "id", $field, $condition, $param);
         } elseif (is_string($field)) {
             if (preg_match('/[,=\<\'\"\(\s]/', $field)) {
                 return $this->whereRaw($field, $op);
             } elseif (is_string($op) && strtolower($op) == 'exp') {
                 $bind = isset($param[2]) && is_array($param[2]) ? $param[2] : null;
                 return $this->whereExp($field, $condition, $bind, $logic);
+            } elseif (is_null($op)) {
+                // 只传了一个参数，默认使用id去查询
+                $where = $this->parseWhereItem($logic, "id", $field, $condition, $param);
+            } else {
+                $where = $this->parseWhereItem($logic, $field, $op, $condition, $param);
             }
-
-            $where = $this->parseWhereItem($logic, $field, $op, $condition, $param);
         }
 
         if (!empty($where)) {
