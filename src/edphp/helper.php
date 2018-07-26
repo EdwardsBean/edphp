@@ -1,12 +1,13 @@
 <?php
 
 use edphp\Db;
-use edphp\exception\HttpException;
-use edphp\exception\HttpResponseException;
 use edphp\Log;
 use edphp\Request;
-use edphp\Response;
 use edphp\Session;
+use edphp\Response;
+use edphp\response\Msg;
+use edphp\exception\HttpException;
+use edphp\exception\HttpResponseException;
 
 if (!function_exists('abort')) {
     /**
@@ -575,4 +576,12 @@ if (!function_exists('response')) {
     {
         return Response::create($data, $type, $code, $header);
     }
+}
+
+function success($msg = '') {
+    return Msg::success([], $msg);
+}
+
+function fail($msg = '', $code = 50000) {
+    return Msg::fail($msg, $code);
 }

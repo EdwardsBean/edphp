@@ -8,14 +8,15 @@ class Msg
 
     public $success = true;
 
-    public static function success($data = [])
+    public static function success($data = [], $msg = '')
     {
         $m = new Msg();
         $m->data = $data;
+        $m->message = $msg;
         return $m;
     }
 
-    public static function fail($msg, $code = 500, $data)
+    public static function fail($msg, $code = 500, $data = [])
     {
         $m = new Msg();
         $m->success = false;

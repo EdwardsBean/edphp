@@ -2,6 +2,7 @@
 
 namespace edphp;
 
+use edphp\exception\BizException;
 use edphp\exception\HttpException;
 
 class Auth {
@@ -29,6 +30,10 @@ class Auth {
      * 校验账号密码
      */
     public static function attempt() {
+        $code = post('code');
+        if(!captcha_check($code)) {
+            throw new BizException(50000, "验证码不正确");
+        }
         $username = post('username');
         $password = post('password');
         if (!$username || !$password) {
