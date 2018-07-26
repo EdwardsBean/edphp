@@ -2632,6 +2632,7 @@ class Query
 
     /**
      * 插入或者更新，如果id在则为更新
+     * 注意replace其实是先删除后插入
      */
     public function save(array $data = [], $replace = false, $getLastInsID = false)
     {
@@ -2643,10 +2644,27 @@ class Query
     }
 
     /**
+     * @access public
+     * @param  array   $dataSet 数据
+     * @param  boolean $replace 是否自动识别更新和写入.注意replace其实是先删除后插入
+     * @return Collection
+     * @throws \Exception
+     */
+    public function saveAll($dataSet, $replace = false)
+    {
+        db()->transaction(function () use ($dataSet) {
+            //mysql没有比较好的批量更新方法（所以thinkphp没有批量更新，只有模型批量更新，并且不推荐使用），所以直接事务，foreach更新
+            foreach ($dataSet as $key => $data) {
+                $this->save($data);
+            }
+        });
+    }
+
+    /**
      * 插入记录
      * @access public
      * @param  array   $data         数据
-     * @param  boolean $replace      是否replace
+     * @param  boolean $replace      是否replace,注意replace其实是先删除后插入
      * @param  boolean $getLastInsID 返回自增主键
      * @param  string  $sequence     自增序列名
      * @return integer|string
@@ -2664,7 +2682,7 @@ class Query
      * 插入记录并获取自增ID
      * @access public
      * @param  array   $data     数据
-     * @param  boolean $replace  是否replace
+     * @param  boolean $replace  是否replace,注意replace其实是先删除后插入
      * @param  string  $sequence 自增序列名
      * @return integer|string
      */
@@ -2677,7 +2695,7 @@ class Query
      * 批量插入记录
      * @access public
      * @param  array     $dataSet 数据集
-     * @param  boolean   $replace 是否replace
+     * @param  boolean   $replace 是否replace. 注意replace其实是先删除后插入
      * @param  integer   $limit   每次写入数据限制
      * @return integer|string
      */

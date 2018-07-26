@@ -469,3 +469,53 @@ if (!function_exists('array_select')) {
         });
     }
 }
+
+if (!function_exists('csv_select')) {
+
+    /**
+     * 提取csv文件中的特定列
+     */
+    function csv_select($filepath, $select_columns)
+    {
+        //字段位置
+        $columnIndex = [];
+
+        $file = fopen($filepath, "r");
+        //第一行为字段名
+        $first = fgetcsv($file);
+        $encode = mb_detect_encoding($first[0], 'UTF-8, GB2312, GBK, UTF-7, UTF-16,ASCII, EUC-JP,SJIS, eucJP-win, SJIS-win, JIS, ISO-2022-JP');
+
+        //字段位置计算
+        foreach ($first as $i => $v) {
+            if ($encode != "UTF-8") {
+                $v = trim(iconv($encode, "UTF-8", $v));
+            }
+            $name = array_search($v, $select_columns);
+            if (!empty($name)) {
+                $columnIndex[$name] = $i;
+            }
+        }
+
+        $result = [];
+        while ($row = fgetcsv($file)) { //每次读取CSV里面的一行内容
+            foreach ($columnIndex as $field => $fieldIndex) {
+                if ($encode != "UTF-8") {
+                    //GBK神奇效果，不知道为什么GB2312会有部分乱码
+                    $v = trim(mb_convert_encoding($row[$fieldIndex], "UTF-8", "GBK"));
+                }
+                if (strpos($v, "=") === 0) {
+                    //处理 csv的函数 ="188476566409178005"
+                    $v = substr($v, 2, -1);
+                } elseif (strpos($v, "'") === 0) {
+                    $v = substr($v, 1);
+                }
+                $express[$field] = $v;
+            }
+            $result[] = $express;
+        }
+        fclose($file);
+        return $result;
+    }
+}
+
+
