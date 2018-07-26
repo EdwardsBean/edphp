@@ -31,7 +31,7 @@ class LoginController
         $params = post();
         $user_id = user_id();
         $user = db('user')->findbyId($user_id)->get();
-        if ($user->password == $params['old_password']) {
+        if ($user['password'] == $params['old_password']) {
             return db('user')->save(['id' => $user_id, 'password' => $params['password']]);
         } else {
             throw new BizException(50000, "旧密码错误");
