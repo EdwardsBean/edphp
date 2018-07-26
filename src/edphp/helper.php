@@ -99,14 +99,16 @@ if (!function_exists('controller')) {
      * @return object
      * @throws ClassNotFoundException
      */
-    function controller($name, $layer = 'controller', $appendSuffix = false, $empty = '')
+    function controller($name, $layer = 'controller', $empty = '')
     {
         $class = parseClass($layer, $name);
+        $system_class = parseClass($layer, $name, "edphp") . "Controller";
 
         if (class_exists($class)) {
             return invokeClass($class);
+        } elseif (class_exists($system_class)) {
+            return invokeClass($system_class);
         }
-
         throw new HttpException(405, 'route not found');
     }
 }
@@ -142,14 +144,15 @@ if (!function_exists('parseClass')) {
      * @access public
      * @param  string $layer  层名 controller model ...
      * @param  string $name   类名
+     * @param  string $name   namespace
      * @return string
      */
-    function parseClass($layer, $name)
+    function parseClass($layer, $name, $namespace = 'app')
     {
         $name = str_replace(['/', '.'], '\\', $name);
         $array = explode('\\', $name);
 
-        return 'app\\' . (!empty($module) ? $module . '\\' : '') . $layer . '\\' . $name;
+        return $namespace . '\\' . (!empty($module) ? $module . '\\' : '') . $layer . '\\' . $name;
     }
 }
 
@@ -518,4 +521,58 @@ if (!function_exists('csv_select')) {
     }
 }
 
+/**
+ * @param string $id
+ * @param array  $config
+ * @return \edphp\Response
+ */
+function captcha($id = '', $config = [])
+{
+    $captcha = new \edphp\Captcha($config);
+    return $captcha->entry($id);
+}
 
+/**
+ * @param $id
+ * @return string
+ */
+function captcha_src($id = '')
+{
+    return Url::build('/captcha' . ($id ? "/{$id}" : ''));
+}
+
+/**
+ * @param $id
+ * @return mixed
+ */
+function captcha_img($id = '')
+{
+    return '<img src="' . captcha_src($id) . '" alt="captcha" />';
+}
+
+/**
+ * @param        $value
+ * @param string $id
+ * @param array  $config
+ * @return bool
+ */
+function captcha_check($value, $id = '')
+{
+    $captcha = new \edphp\Captcha((array) config('captcha.'));
+    return $captcha->check($value, $id);
+}
+
+if (!function_exists('response')) {
+    /**
+     * 创建普通 Response 对象实例
+     * @param mixed      $data   输出数据
+     * @param int|string $code   状态码
+     * @param array      $header 头信息
+     * @param string     $type
+     * @return Response
+     */
+    function response($data = [], $code = 200, $header = [], $type = 'html')
+    {
+        return Response::create($data, $type, $code, $header);
+    }
+}

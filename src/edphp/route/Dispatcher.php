@@ -75,7 +75,7 @@ class Dispatcher
         // 解析默认的URL规则
         $path = $this->request->pathinfo();
         $controller = !empty($path) ? array_shift($path) : null;
-        $action = !empty($path) ? array_shift($path) : null;
+        $action = !empty($path) ? array_shift($path) : "index";
         if (empty($controller) || empty($action)) {
             throw new HttpException(404, 'controller or action null');
         }
