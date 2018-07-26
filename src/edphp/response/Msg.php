@@ -15,12 +15,13 @@ class Msg
         return $m;
     }
 
-    public static function fail($msg, $code = 500)
+    public static function fail($msg, $code = 500, $data)
     {
         $m = new Msg();
         $m->success = false;
         $m->code = $code;
         $m->message = $msg;
+        $m->data = $data;
         return $m;
     }
 }

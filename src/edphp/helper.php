@@ -315,8 +315,8 @@ if (!function_exists('write')) {
      */
     function write($msg, $type = 'info', array $context = [])
     {
-       $log = Log::getInstance();
-       $log->record($msg, $type);
+        $log = Log::getInstance();
+        $log->record($msg, $type);
     }
 }
 
@@ -437,7 +437,6 @@ if (!function_exists('I')) {
     }
 }
 
-
 if (!function_exists('array_remove')) {
 
     /**
@@ -451,5 +450,22 @@ if (!function_exists('array_remove')) {
             return $val;
         }
         return null;
+    }
+}
+
+if (!function_exists('array_select')) {
+
+    /**
+     * 适用于 [ 0=>[], 1=>[]]的复合数组，选择value中的keys
+     */
+    function array_select(array &$arr, $value_keys)
+    {
+        return array_map($arr, function ($row) use ($value_keys) {
+            $v = [];
+            foreach ($value_keys as $key) {
+                $v[] = $row[$key];
+            }
+            return $v;
+        });
     }
 }
