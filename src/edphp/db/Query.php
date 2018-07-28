@@ -1792,15 +1792,15 @@ class Query
     public function paginate($page, $pageSize = 15)
     {
         $page = $page < 1 ? 1 : $page;
-
         $options = $this->getOptions();
         $bind    = $this->bind;
         $total   = $this->count();
         $results = $this->options($options)->bind($bind)->page($page, $pageSize)->get();
         $data = [
             "total" => $total,
-            "page" => $page,
-            "pageSize" => $pageSize,
+            //前端_GET传过来的page可能为字符串，转换回数字
+            "page" => intval($page),
+            "pageSize" => intval($pageSize),
             "lastPage" => (int) ceil($total / $pageSize),
             "data" => $results,
         ];
@@ -2681,7 +2681,12 @@ class Query
 
         $this->options['data'] = array_merge($this->options['data'], $data);
 
-        return $this->connection->insert($this, $replace, $getLastInsID, $sequence);
+        $result = $this->connection->insert($this, $replace, $getLastInsID, $sequence);
+        
+        //重置opions，防止重复使用query导致逻辑出错
+        $this->options = [];
+
+        return $result;
     }
 
     /**
@@ -2694,7 +2699,12 @@ class Query
      */
     public function insertGetId(array $data, $replace = false, $sequence = null)
     {
-        return $this->insert($data, $replace, true, $sequence);
+        $result = $this->insert($data, $replace, true, $sequence);
+
+        //重置opions，防止重复使用query导致逻辑出错
+        $this->options = [];
+
+        return $result;
     }
 
     /**
@@ -2717,7 +2727,11 @@ class Query
             $limit = $this->options['limit'];
         }
 
-        return $this->connection->insertAll($this, $dataSet, $replace, $limit);
+        $result = $this->connection->insertAll($this, $dataSet, $replace, $limit);
+        //重置opions，防止重复使用query导致逻辑出错
+        $this->options = [];
+
+        return $result;
     }
 
     /**
@@ -2732,7 +2746,13 @@ class Query
     {
         $this->parseOptions();
 
-        return $this->connection->selectInsert($this, $fields, $table);
+        $result = $this->connection->selectInsert($this, $fields, $table);
+
+        //重置opions，防止重复使用query导致逻辑出错
+        $this->options = [];
+
+        return $result;
+                
     }
 
     /**
@@ -2749,7 +2769,12 @@ class Query
 
         $this->options['data'] = array_merge($this->options['data'], $data);
 
-        return $this->connection->update($this);
+        $result = $this->connection->update($this);
+
+        //重置opions，防止重复使用query导致逻辑出错
+        $this->options = [];
+
+        return $result;
     }
 
     /**
@@ -2780,7 +2805,11 @@ class Query
 
         $this->options['data'] = $data;
 
-        return $this->connection->delete($this);
+        $result = $this->connection->delete($this);
+        //重置opions，防止重复使用query导致逻辑出错
+        $this->options = [];
+
+        return $result;
     }
 
     /**
@@ -2942,6 +2971,8 @@ class Query
         } elseif (!empty($this->options['fail'])) {
             $this->throwNotFound($this->options);
         }
+        //重置opions，防止重复使用query导致逻辑出错
+        $this->options = [];
 
         return $result;
     }
