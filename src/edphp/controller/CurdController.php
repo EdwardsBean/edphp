@@ -30,7 +30,7 @@ class CurdController extends AuthController
         return db($this->getTable())->getOne($id);
     }
 
-    private function getTable()
+    protected function getTable()
     {
         $class = get_called_class();
         $r = explode("\\", $class);
