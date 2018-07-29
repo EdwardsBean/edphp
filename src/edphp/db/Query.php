@@ -2643,9 +2643,9 @@ class Query
     public function save(array $data = [], $replace = false, $getLastInsID = false)
     {
         if (key_exists('id', $data) && !empty($data['id'])) {
-            $this->update($data);
+            return $this->update($data);
         } else {
-            $this->insert($data, $replace, $getLastInsID);
+            return $this->insert($data, $replace, $getLastInsID);
         }
     }
 
