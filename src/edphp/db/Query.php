@@ -3347,13 +3347,7 @@ class Query
      */
     public function trigger($event)
     {
-        $result = false;
 
-        if (isset(self::$event[$event])) {
-            $result = Container::getInstance()->invoke(self::$event[$event], [$this]);
-        }
-
-        return $result;
     }
 
 }

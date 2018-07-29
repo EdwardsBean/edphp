@@ -1197,16 +1197,6 @@ abstract class Connection
             return $this->getRealSql($sql, $bind);
         }
 
-        // 检测缓存
-        $cache = Container::get('cache');
-
-        if (isset($key) && $cache->get($key)) {
-            // 删除缓存
-            $cache->rm($key);
-        } elseif (!empty($options['cache']['tag'])) {
-            $cache->clear($options['cache']['tag']);
-        }
-
         // 执行操作
         $result = $this->execute($sql, $bind, $query);
 
