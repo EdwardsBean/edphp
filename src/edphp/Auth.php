@@ -31,7 +31,7 @@ class Auth {
      */
     public static function attempt() {
         if (user_id()) {
-            return user_id();
+            return session_id();
         }
         $code = post('code');
         if(!captcha_check($code)) {
