@@ -474,6 +474,31 @@ if (!function_exists('array_select')) {
     }
 }
 
+if (!function_exists('array_mmerge')) {
+
+    /**
+     * 适用于 [ 0=>[], 1=>[]]的复合数组，选择使用keys作为主键合并
+     */
+    function array_mmerge(array $a, array $b, array $keys)
+    {
+        foreach ($a as $a_line) {
+            foreach ($b as $b_line) {
+                $match = true;
+                foreach ($keys as $key) {
+                    if ($a_line[$key] !== $b_line[$key]) {
+                        $match = false;
+                    }
+                }
+                if ($match) {
+                    $a_line = $b_line;
+                }
+            }
+            $result[] = $a_line;
+        }
+        return $result;
+    }
+}
+
 if (!function_exists('array_msort')) {
 
     /**
