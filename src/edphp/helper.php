@@ -474,6 +474,25 @@ if (!function_exists('array_select')) {
     }
 }
 
+if (!function_exists('array_msort')) {
+
+    /**
+     * 适用于 [ 0=>[], 1=>[]]的复合数组，选择使用key的值做排序。
+     */
+    function array_msort(array &$arr, $key, $desc = true)
+    {
+        if ($desc) {
+            usort($arr, function($a, $b) {
+                return $a['val'] < $b['val'];
+            });
+        } else {
+            usort($arr, function($a, $b) {
+                return $a['val'] > $b['val'];
+            });
+        }
+    }
+}
+
 if (!function_exists('csv_select')) {
 
     /**
