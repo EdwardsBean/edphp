@@ -1,8 +1,8 @@
 <?php
 namespace edphp;
 
-use edphp\route\Middleware;
 use edphp\route\Dispatcher;
+use edphp\route\Middleware;
 
 class App
 {
@@ -63,7 +63,7 @@ class App
      * @var string
      */
     protected $rootPath;
-    
+
     /**
      * 运行时目录
      * @var string
@@ -84,6 +84,16 @@ class App
         $this->frameworkPath = __DIR__ . DIRECTORY_SEPARATOR;
         $this->runtimePath = $this->rootPath . 'runtime' . DIRECTORY_SEPARATOR;
 
+        // 当前文件名
+        if (!defined('_PHP_FILE_')) {
+            define('_PHP_FILE_', rtrim($_SERVER['SCRIPT_NAME'], '/'));
+        }
+
+        //网站根目录，上传文件时，获取根目录，前后端分离时方便定位
+        if (!defined('__ROOT__')) {
+            $_root = rtrim(dirname(_PHP_FILE_), '/');
+            define('__ROOT__', (($_root == '/' || $_root == '\\') ? '' : $_root));
+        }
         // 注册错误和异常处理机制
         Error::register();
     }
@@ -133,7 +143,7 @@ class App
         if (config('app.exception_handle')) {
             Error::setExceptionHandler(config('app.exception_handle'));
         }
-        
+
         Db::init($this->config->pull('database'));
 
     }
@@ -169,9 +179,11 @@ class App
             $profilePath = $this->rootPath . 'env.' . $profile;
             if (file_exists($profilePath)) {
                 $env = parse_ini_file($profilePath, true, INI_SCANNER_TYPED);
-                if(is_array($env)) {
-                    foreach ($env as $item => $value)
-                    $this->config->set($value, $item);
+                if (is_array($env)) {
+                    foreach ($env as $item => $value) {
+                        $this->config->set($value, $item);
+                    }
+
                 }
             }
         }
@@ -234,7 +246,6 @@ class App
         return $this->runtimePath;
     }
 
-    
     /**
      * 获取应用开启时间
      * @access public

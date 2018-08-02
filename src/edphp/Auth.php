@@ -30,6 +30,9 @@ class Auth {
      * 校验账号密码
      */
     public static function attempt() {
+        if (user_id()) {
+            return session_id();
+        }
         $code = post('code');
         if(!captcha_check($code)) {
             throw new BizException(50000, "验证码不正确");
