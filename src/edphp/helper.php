@@ -495,7 +495,7 @@ if (!function_exists('array_mmerge')) {
             }
             $result[] = $a_line;
         }
-        return $result;
+        return isset($result) ? $result : [];
     }
 }
 
@@ -504,7 +504,7 @@ if (!function_exists('array_msort')) {
     /**
      * 适用于 [ 0=>[], 1=>[]]的复合数组，选择使用key的值做排序。
      */
-    function array_msort(array &$arr, $key, $desc = true)
+    function array_msort(array $arr = [], $key, $desc = true)
     {
         if ($desc) {
             usort($arr, function($a, $b) {
@@ -515,6 +515,7 @@ if (!function_exists('array_msort')) {
                 return $a['val'] > $b['val'];
             });
         }
+        return $arr;
     }
 }
 
