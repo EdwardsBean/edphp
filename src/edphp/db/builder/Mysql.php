@@ -166,4 +166,35 @@ class Mysql extends Builder
         return 'rand()';
     }
 
+    /**
+     * ON DUPLICATE KEY UPDATE 分析
+     * @access protected
+     * @param mixed $duplicate
+     * @return string
+     */
+    protected function parseDuplicate($query, $duplicate)
+    {
+        // 布尔值或空则返回空字符串
+        if (is_bool($duplicate) || empty($duplicate)) {
+            return '';
+        }
+
+        foreach ($duplicate as $key => $val) {
+            if (is_numeric($key)) {
+                // array('field1', 'field2', 'field3') 解析为 ON DUPLICATE KEY UPDATE field1=VALUES(field1), field2=VALUES(field2), field3=VALUES(field3)
+                $updates[] = "`$val`=VALUES(`$val`)";
+            } 
+        }
+
+        if (empty($updates)) {
+            //array('field1' => "a", 'field2' ="b") 解析为 ON DUPLICATE KEY UPDATE field1=:data_field1_duplicate
+            $duplicate = $this->parseData($query, $duplicate, [], [], '_duplicate');
+            foreach ($duplicate as $key => $val) {
+                $updates[] = $key . ' = ' . $val;
+            }
+        }
+
+        return " ON DUPLICATE KEY UPDATE " . join(', ', $updates);
+    }
+
 }

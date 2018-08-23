@@ -2105,4 +2105,23 @@ abstract class Connection
         }
     }
 
+    public function createOrUpdate(Query $query, $update) 
+    {
+        // 分析查询表达式
+        $options = $query->getOptions();
+
+        // 生成UPDATE SQL语句
+        $sql  = $this->builder->createOrUpdate($query, $update);
+        $bind = $query->getBind();
+
+        if (!empty($options['fetch_sql'])) {
+            // 获取实际执行的SQL语句
+            return $this->getRealSql($sql, $bind);
+        }
+
+        // 执行操作
+        $result = '' == $sql ? 0 : $this->execute($sql, $bind, $query);
+        return $result;
+    }
+
 }

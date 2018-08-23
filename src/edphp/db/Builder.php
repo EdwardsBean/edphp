@@ -82,13 +82,14 @@ abstract class Builder
 
     /**
      * 数据分析
+     * 生成绑定参数，将参数对应的值以及类型保存到query->bind
      * @access protected
      * @param  Query     $query     查询对象
      * @param  array     $data      数据
      * @param  array     $fields    字段信息
      * @param  array     $bind      参数绑定
      * @param  string    $suffix    参数绑定后缀
-     * @return array
+     * @return array     如["`name`" => "data_name"]
      */
     protected function parseData(Query $query, $data = [], $fields = [], $bind = [], $suffix = '')
     {
@@ -100,6 +101,7 @@ abstract class Builder
 
         // 获取绑定信息
         if (empty($bind)) {
+            // 去数据库查询表字段信息
             $bind = $this->connection->getFieldsBind($options['table']);
         }
 
@@ -157,7 +159,7 @@ abstract class Builder
     }
 
     /**
-     * 数据绑定处理
+     * 数据绑定处理，字段占位符使用[data__字段名]格式
      * @access protected
      * @param  Query     $query     查询对象
      * @param  string    $key       字段名
@@ -1220,5 +1222,49 @@ abstract class Builder
                 $this->parseComment($query, $options['comment']),
             ],
             $this->deleteSql);
+    }
+
+    /**
+     * 生成Insert On Duplicate Key SQL
+     * @access public
+     * @param  Query     $query   查询对象
+     * @param  bool      $replace 是否replace
+     * @return string
+     */
+    public function createOrUpdate(Query $query, $update)
+    {
+        $options = $query->getOptions();
+
+        // 分析并处理数据
+        $data = $this->parseData($query, $options['data']);
+        if (empty($data)) {
+            return '';
+        }
+
+        $fields = array_keys($data);
+        $values = array_values($data);
+
+        $sql = str_replace(
+            ['%INSERT%', '%TABLE%', '%FIELD%', '%DATA%', '%COMMENT%'],
+            [
+                'INSERT',
+                $this->parseTable($query, $options['table']),
+                implode(' , ', $fields),
+                implode(' , ', $values),
+                '',
+            ],
+            $this->insertSql);
+        return $sql . $this->parseDuplicate($query, $update);
+    }
+
+    /**
+     * ON DUPLICATE KEY UPDATE 分析
+     * @access protected
+     * @param mixed $duplicate
+     * @return string
+     */
+    protected function parseDuplicate($query, $update)
+    {
+        return '';
     }
 }

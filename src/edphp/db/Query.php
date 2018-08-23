@@ -3350,4 +3350,28 @@ class Query
 
     }
 
+    /**
+     * 创建，或者更新.注意此方法性能不好
+     * mysql是使用on duplicate key update
+     * @param array $data 参数
+     * @param array $update 当发生duplicate时，要更新的字段
+     * @return integer 2为更新，1为新增
+     */
+    public function createOrUpdate($data, $update = [])
+    {
+        $this->parseOptions();
+
+        $this->options['data'] = array_merge($this->options['data'], $data);
+
+        if (empty($update)) {
+            $update = array_keys($data);
+        }
+        $result = $this->connection->createOrUpdate($this, $update);
+        
+        //重置opions，防止重复使用query导致逻辑出错
+        $this->options = [];
+
+        return $result;
+    }
+
 }
