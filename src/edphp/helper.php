@@ -558,6 +558,9 @@ if (!function_exists('csv_select')) {
                 } elseif (strpos($v, "'") === 0) {
                     $v = substr($v, 1);
                 }
+                if ($v == "") {
+                    $v = null;
+                }
                 $express[$field] = $v;
             }
             $result[] = $express;
