@@ -1,13 +1,13 @@
 <?php
 
 use edphp\Db;
-use edphp\Log;
-use edphp\Request;
-use edphp\Session;
-use edphp\Response;
-use edphp\response\Msg;
 use edphp\exception\HttpException;
 use edphp\exception\HttpResponseException;
+use edphp\Log;
+use edphp\Request;
+use edphp\Response;
+use edphp\response\Msg;
+use edphp\Session;
 
 if (!function_exists('abort')) {
     /**
@@ -507,11 +507,11 @@ if (!function_exists('array_msort')) {
     function array_msort(array $arr = [], $key, $desc = true)
     {
         if ($desc) {
-            usort($arr, function($a, $b) {
+            usort($arr, function ($a, $b) {
                 return $a['val'] < $b['val'];
             });
         } else {
-            usort($arr, function($a, $b) {
+            usort($arr, function ($a, $b) {
                 return $a['val'] > $b['val'];
             });
         }
@@ -532,13 +532,16 @@ if (!function_exists('csv_select')) {
         $file = fopen($filepath, "r");
         //第一行为字段名
         $first = fgetcsv($file);
-        $encode = mb_detect_encoding($first[0], 'UTF-8, GB2312, GBK, UTF-7, UTF-16,ASCII, EUC-JP,SJIS, eucJP-win, SJIS-win, JIS, ISO-2022-JP');
-
         //字段位置计算
         foreach ($first as $i => $v) {
+            // 获得列名称的格式
+            $encode = mb_detect_encoding($first[$i], 'UTF-8, GB2312, GBK, UTF-7, UTF-16,ASCII, EUC-JP,SJIS, eucJP-win, SJIS-win, JIS, ISO-2022-JP');
+            // 判断列名称的格式是否正确
             if ($encode != "UTF-8") {
+                // 列名格式错误，将其转换成 utf-8 格式
                 $v = trim(iconv($encode, "UTF-8", $v));
             }
+
             $name = array_search($v, $select_columns);
             if (!empty($name)) {
                 $columnIndex[$name] = $i;
@@ -548,9 +551,13 @@ if (!function_exists('csv_select')) {
         $result = [];
         while ($row = fgetcsv($file)) { //每次读取CSV里面的一行内容
             foreach ($columnIndex as $field => $fieldIndex) {
+                $encode = mb_detect_encoding($row[$fieldIndex], 'UTF-8, GB2312, GBK, UTF-7, UTF-16,ASCII,
+                EUC-JP,SJIS, eucJP-win, SJIS-win, JIS, ISO-2022-JP');
+                // 判断格式，不正确进行转换
+                $v = $row[$fieldIndex];
                 if ($encode != "UTF-8") {
                     //GBK神奇效果，不知道为什么GB2312会有部分乱码
-                    $v = trim(mb_convert_encoding($row[$fieldIndex], "UTF-8", "GBK"));
+                    $v = trim(mb_convert_encoding($v, "UTF-8", "GBK"));
                 }
                 if (strpos($v, "=") === 0) {
                     //处理 csv的函数 ="188476566409178005"
@@ -626,10 +633,12 @@ if (!function_exists('response')) {
     }
 }
 
-function success($msg = '') {
+function success($msg = '')
+{
     return Msg::success([], $msg);
 }
 
-function fail($msg = '', $code = 50000) {
+function fail($msg = '', $code = 50000)
+{
     return Msg::fail($msg, $code);
 }
