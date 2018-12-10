@@ -2852,7 +2852,7 @@ class Query
     }
 
     /**
-     * 查找记录
+     * 查找记录, data只允许是主键，或者主键数组
      * @access public
      * @param  array|string|Query|\Closure $data
      * @return Collection|array|\PDOStatement|string
@@ -2928,7 +2928,7 @@ class Query
     }
 
     /**
-     * 查找单条记录
+     * 查找单条记录, data只允许是主键，或者主键数组
      * @access public
      * @param  array|string|Query|\Closure $data
      * @return array|null|\PDOStatement|string|Model
