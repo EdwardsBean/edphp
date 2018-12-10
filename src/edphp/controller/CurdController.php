@@ -9,25 +9,44 @@ use edphp\exception\HttpException;
  */
 class CurdController extends AuthController
 {
+    protected $limit_user;
 
-    function list() {
-        return db($this->getTable())->get();
+    public function list() {
+        $where = [];
+        if (isset($limit_user)) {
+            $where['user_id'] = user_id();
+        }
+        return db($this->getTable())->where($where)->get();
     }
 
     public function save()
     {
+        $where = [];
+        if (isset($limit_user)) {
+            $where['user_id'] = user_id();
+        }
         //存在id则自动更新
-        db($this->getTable())->save(post());
+        $p = post();
+        $p['user_id'] = user_id();
+        db($this->getTable())->where($where)->save($p);
     }
 
     public function delete($id)
     {
-        return db($this->getTable())->delete($id);
+        $where = [];
+        if (isset($limit_user)) {
+            $where['user_id'] = user_id();
+        }
+        return db($this->getTable())->where($where)->delete($id);
     }
 
     public function one($id)
     {
-        return db($this->getTable())->getOne($id);
+        $where = [];
+        if (isset($limit_user)) {
+            $where['user_id'] = user_id();
+        }
+        return db($this->getTable())->where($where)->getOne($id);
     }
 
     protected function getTable()
