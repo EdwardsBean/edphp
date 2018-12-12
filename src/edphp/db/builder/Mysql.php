@@ -46,7 +46,7 @@ class Mysql extends Builder
      * @param  bool      $replace 是否replace
      * @return string
      */
-    public function insertAll(Query $query, $dataSet, $replace = false)
+    public function insertAll(Query $query, $dataSet, $replace = false, $dupliateUpdates = [])
     {
         $options = $query->getOptions();
 
@@ -75,16 +75,29 @@ class Mysql extends Builder
             $fields[] = $this->parseKey($query, $field);
         }
 
-        return str_replace(
-            ['%INSERT%', '%TABLE%', '%FIELD%', '%DATA%', '%COMMENT%'],
-            [
-                $replace ? 'REPLACE' : 'INSERT',
-                $this->parseTable($query, $options['table']),
-                implode(' , ', $fields),
-                implode(' , ', $values),
-                $this->parseComment($query, $options['comment']),
-            ],
-            $this->insertAllSql);
+        if (!empty($dupliateUpdates)) {
+            return str_replace(
+                ['%INSERT%', '%TABLE%', '%FIELD%', '%DATA%', '%COMMENT%'],
+                [
+                    'INSERT',
+                    $this->parseTable($query, $options['table']),
+                    implode(' , ', $fields),
+                    implode(' , ', $values) . $this->parseDuplicate($query, $dupliateUpdates),
+                    $this->parseComment($query, $options['comment']),
+                ],
+                $this->insertAllSql);
+        } else {
+            return str_replace(
+                ['%INSERT%', '%TABLE%', '%FIELD%', '%DATA%', '%COMMENT%'],
+                [
+                    $replace ? 'REPLACE' : 'INSERT',
+                    $this->parseTable($query, $options['table']),
+                    implode(' , ', $fields),
+                    implode(' , ', $values),
+                    $this->parseComment($query, $options['comment']),
+                ],
+                $this->insertAllSql);
+        }
     }
 
     /**

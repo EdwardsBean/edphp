@@ -2735,6 +2735,33 @@ class Query
     }
 
     /**
+     * 批量插入记录
+     * @access public
+     * @param  array     $dataSet 数据集
+     * @param  boolean   $replace 是否replace. 注意replace其实是先删除后插入
+     * @param  integer   $limit   每次写入数据限制
+     * @return integer|string
+     */
+    public function insertOnDuplicateAll(array $dataSet = [], $updateSet = [], $limit = null)
+    {
+        $this->parseOptions();
+
+        if (empty($dataSet)) {
+            $dataSet = $this->options['data'];
+        }
+
+        if (empty($limit) && !empty($this->options['limit'])) {
+            $limit = $this->options['limit'];
+        }
+
+        $result = $this->connection->insertAll($this, $dataSet, false, $limit, $updateSet);
+        //重置opions，防止重复使用query导致逻辑出错
+        $this->options = [];
+
+        return $result;
+    }
+
+    /**
      * 通过Select方式插入记录
      * @access public
      * @param  string $fields 要插入的数据表字段名
@@ -3357,7 +3384,7 @@ class Query
      * @param array $update 当发生duplicate时，要更新的字段
      * @return integer 2为更新，1为新增
      */
-    public function createOrUpdate($data, $update = [])
+    public function insertOnDuplicate($data, $update = [])
     {
         $this->parseOptions();
 
@@ -3366,7 +3393,7 @@ class Query
         if (empty($update)) {
             $update = array_keys($data);
         }
-        $result = $this->connection->createOrUpdate($this, $update);
+        $result = $this->connection->insertOnDuplicate($this, $update);
         
         //重置opions，防止重复使用query导致逻辑出错
         $this->options = [];

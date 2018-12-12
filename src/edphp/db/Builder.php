@@ -1098,9 +1098,10 @@ abstract class Builder
      * @param  Query     $query   查询对象
      * @param  array     $dataSet 数据集
      * @param  bool      $replace 是否replace
+     * @param  bool      $onDuplicate
      * @return string
      */
-    public function insertAll(Query $query, $dataSet, $replace = false)
+    public function insertAll(Query $query, $dataSet, $replace = false, $dupliateUpdates = [])
     {
         $options = $query->getOptions();
 
@@ -1228,10 +1229,9 @@ abstract class Builder
      * 生成Insert On Duplicate Key SQL
      * @access public
      * @param  Query     $query   查询对象
-     * @param  bool      $replace 是否replace
      * @return string
      */
-    public function createOrUpdate(Query $query, $update)
+    public function insertOnDuplicate(Query $query, $update)
     {
         $options = $query->getOptions();
 

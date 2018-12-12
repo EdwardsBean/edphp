@@ -1005,11 +1005,12 @@ abstract class Connection
      * @param  mixed     $dataSet    数据集
      * @param  bool      $replace    是否replace
      * @param  integer   $limit      每次写入数据限制
+     * @param  integer   $onDupliate 是否采用insert on duplicate
      * @return integer|string
      * @throws \Exception
      * @throws \Throwable
      */
-    public function insertAll(Query $query, $dataSet = [], $replace = false, $limit = null)
+    public function insertAll(Query $query, $dataSet = [], $replace = false, $limit = null, $dupliateUpdates = [])
     {
         if (!is_array(reset($dataSet))) {
             return false;
@@ -1026,7 +1027,11 @@ abstract class Connection
                 $count = 0;
 
                 foreach ($array as $item) {
-                    $sql  = $this->builder->insertAll($query, $item, $replace);
+                    if (empty($dupliateUpdates)) {
+                        $sql  = $this->builder->insertAll($query, $item, $replace);
+                    } else {
+                        $sql  = $this->builder->insertAll($query, $item, false, $dupliateUpdates);
+                    }
                     $bind = $query->getBind();
 
                     if (!empty($options['fetch_sql'])) {
@@ -1049,7 +1054,11 @@ abstract class Connection
             return isset($fetchSql) ? implode(';', $fetchSql) : $count;
         }
 
-        $sql  = $this->builder->insertAll($query, $dataSet, $replace);
+        if (empty($dupliateUpdates)) {
+            $sql  = $this->builder->insertAll($query, $dataSet, $replace);
+        } else {
+            $sql  = $this->builder->insertAll($query, $dataSet, false, $dupliateUpdates);
+        }
         $bind = $query->getBind();
 
         if (!empty($options['fetch_sql'])) {
@@ -2105,13 +2114,13 @@ abstract class Connection
         }
     }
 
-    public function createOrUpdate(Query $query, $update) 
+    public function insertOnDuplicate(Query $query, $update) 
     {
         // 分析查询表达式
         $options = $query->getOptions();
 
         // 生成UPDATE SQL语句
-        $sql  = $this->builder->createOrUpdate($query, $update);
+        $sql  = $this->builder->insertOnDuplicate($query, $update);
         $bind = $query->getBind();
 
         if (!empty($options['fetch_sql'])) {
