@@ -27,7 +27,6 @@ class CurdController extends AuthController
         }
         //存在id则自动更新
         $p = post();
-        $p['user_id'] = user_id();
         db($this->getTable())->where($where)->save($p);
     }
 
