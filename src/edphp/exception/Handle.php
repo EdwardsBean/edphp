@@ -66,7 +66,7 @@ class Handle
     public function render(Exception $e)
     {
         
-        if (key_exists("HTTP_ACCEPT", $_SERVER) && false !== strpos($_SERVER["HTTP_ACCEPT"], 'application/json')) {
+        if (key_exists("HTTP_ACCEPT", $_SERVER) && false !== strpos($_SERVER["HTTP_ACCEPT"], 'application/json') || !isDebug()) {
             return $this->renderErrorJson($e);
         } else {
             return $this->renderErrorHtml($e);
@@ -75,10 +75,6 @@ class Handle
 
     protected function renderErrorHtml(Exception $exception)
     {
-        if (!isDebug()) {
-            return Response::create("系统内部错误", 'html');
-        }
-
         // 调试模式，获取详细的错误信息
         $data = $this->getError($exception);
 

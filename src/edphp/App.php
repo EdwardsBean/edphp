@@ -174,17 +174,14 @@ class App
         }
 
         // 加载环境配置
-        $profile = getenv('EDPHP_PROFILE');
-        if ($profile) {
-            $profilePath = $this->rootPath . 'env.' . $profile;
-            if (file_exists($profilePath)) {
-                $env = parse_ini_file($profilePath, true, INI_SCANNER_TYPED);
-                if (is_array($env)) {
-                    foreach ($env as $item => $value) {
-                        $this->config->set($value, $item);
-                    }
-
+        $profilePath = $this->rootPath . 'env.ini';
+        if (file_exists($profilePath)) {
+            $env = parse_ini_file($profilePath, true, INI_SCANNER_TYPED);
+            if (is_array($env)) {
+                foreach ($env as $item => $value) {
+                    $this->config->set($value, $item);
                 }
+
             }
         }
 
