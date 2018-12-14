@@ -9,9 +9,9 @@ use edphp\exception\HttpException;
  */
 class CurdController extends AuthController
 {
-    protected $this->limit_user;
+    protected $limit_user;
 
-    protected $this->unlimit_user;
+    protected $unlimit_user;
 
     public function list() {
         $where = [];
