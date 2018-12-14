@@ -9,12 +9,17 @@ use edphp\exception\HttpException;
  */
 class CurdController extends AuthController
 {
-    protected $limit_user;
+    protected $this->limit_user;
+
+    protected $this->unlimit_user;
 
     public function list() {
         $where = [];
-        if (isset($limit_user)) {
-            $where['user_id'] = user_id();
+        if (isset($this->limit_user)) {
+            $role = user_role();
+            if (!isset($this->unlimit_user) && !($this->unlimit_user == $role || is_array($this->unlimit_user) && in_array($role ,$this->unlimit_user))) {
+                $where['user_id'] = user_id();
+            }
         }
         return db($this->getTable())->where($where)->get();
     }
@@ -22,8 +27,11 @@ class CurdController extends AuthController
     public function save()
     {
         $where = [];
-        if (isset($limit_user)) {
-            $where['user_id'] = user_id();
+        if (isset($this->limit_user)) {
+            $role = user_role();
+            if (!isset($this->unlimit_user) && !($this->unlimit_user == $role || is_array($this->unlimit_user) && in_array($role ,$this->unlimit_user))) {
+                $where['user_id'] = user_id();
+            }
         }
         //存在id则自动更新
         $p = post();
@@ -33,8 +41,11 @@ class CurdController extends AuthController
     public function delete($id)
     {
         $where = [];
-        if (isset($limit_user)) {
-            $where['user_id'] = user_id();
+        if (isset($this->limit_user)) {
+            $role = user_role();
+            if (!isset($this->unlimit_user) && !($this->unlimit_user == $role || is_array($this->unlimit_user) && in_array($role ,$this->unlimit_user))) {
+                $where['user_id'] = user_id();
+            }
         }
         return db($this->getTable())->where($where)->delete($id);
     }
@@ -42,8 +53,11 @@ class CurdController extends AuthController
     public function one($id)
     {
         $where = [];
-        if (isset($limit_user)) {
-            $where['user_id'] = user_id();
+        if (isset($this->limit_user)) {
+            $role = user_role();
+            if (!isset($this->unlimit_user) && !($this->unlimit_user == $role || is_array($this->unlimit_user) && in_array($role ,$this->unlimit_user))) {
+                $where['user_id'] = user_id();
+            }
         }
         return db($this->getTable())->where($where)->getOne($id);
     }
