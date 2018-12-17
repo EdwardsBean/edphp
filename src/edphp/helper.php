@@ -551,8 +551,7 @@ if (!function_exists('csv_select')) {
         $result = [];
         while ($row = fgetcsv($file)) { //每次读取CSV里面的一行内容
             foreach ($columnIndex as $field => $fieldIndex) {
-                $encode = mb_detect_encoding($row[$fieldIndex], 'UTF-8, GB2312, GBK, UTF-7, UTF-16,ASCII,
-                EUC-JP,SJIS, eucJP-win, SJIS-win, JIS, ISO-2022-JP');
+                $encode = mb_detect_encoding($row[$fieldIndex], 'UTF-8, GB2312, GBK, UTF-7, UTF-16, ASCII, EUC-JP,SJIS, eucJP-win, SJIS-win, JIS, ISO-2022-JP');
                 // 判断格式，不正确进行转换
                 $v = $row[$fieldIndex];
                 if ($encode != "UTF-8") {
