@@ -647,7 +647,7 @@ function http_get($url)
 {
     record("url:$url");
     $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $api); 
+    curl_setopt($ch, CURLOPT_URL, $url); 
     curl_setopt($ch, CURLOPT_TIMEOUT, 30);           //设置超时   
     curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36");   //用户访问代理 User-Agent   
     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);      //跟踪301   
