@@ -642,3 +642,32 @@ function fail($msg = '', $code = 50000)
 {
     return Msg::fail($msg, $code);
 }
+
+function http_get($url)
+{
+    record("url:$url");
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $api); 
+    curl_setopt($ch, CURLOPT_TIMEOUT, 30);           //设置超时   
+    curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36");   //用户访问代理 User-Agent   
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);      //跟踪301   
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);        //返回结果   
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);        //返回结果   
+    $r = curl_exec($ch);
+    $errorno = curl_errno($ch);
+    if ($errorno) {
+        record("http get error with code: $errorno");
+        return false;
+    }
+    return $r;
+}
+
+function http_get_json($url)
+{
+    $r = http_get($url);
+    if ($r !== false) {
+        $res = json_decode($r, true);
+        return $res;
+    }
+    return $r;
+}
