@@ -655,6 +655,7 @@ function http_get($url)
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);        //返回结果   
     $r = curl_exec($ch);
     $errorno = curl_errno($ch);
+    curl_close($ch);
     if ($errorno) {
         record("http get error with code: $errorno");
         return false;
